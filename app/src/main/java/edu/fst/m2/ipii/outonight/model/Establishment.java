@@ -14,6 +14,9 @@ public abstract class Establishment extends Model {
     @Column(name = "name", notNull = true, index = true)
     protected String name;
 
+    @Column(name = "description")
+    protected String description;
+
     @Column(name = "featured")
     protected boolean featured;
 
@@ -32,6 +35,14 @@ public abstract class Establishment extends Model {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public boolean isFeatured() {

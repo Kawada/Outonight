@@ -4,7 +4,6 @@
     <file url="file://$PROJECT_DIR$/app/src/main/java/edu/fst/m2/ipii/outonight/ui/activity/DetailActivity.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/edu/fst/m2/ipii/outonight/ui/adapter/TestListViewAdapter.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/edu/fst/m2/ipii/outonight/ui/adapter/TestRecyclerViewAdapter.java" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/edu/fst/m2/ipii/outonight/ui/fragment/ListViewFragment.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/edu/fst/m2/ipii/outonight/ui/fragment/RecyclerViewFragment.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/edu/fst/m2/ipii/outonight/ui/fragment/ScrollFragment.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/edu/fst/m2/ipii/outonight/ui/fragment/WebViewFragment.java" charset="windows-1252" />

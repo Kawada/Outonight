@@ -4,7 +4,7 @@
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:io="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.android.io2014.DetailActivity"
+    tools:context="edu.fst.m2.ipii.outonight.ui.activity.DetailActivity"
 
     android:id="@+id/content"
 

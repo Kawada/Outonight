@@ -152,8 +152,14 @@ public class DetailActivity extends Activity {
     }
 
     private void colorize(Bitmap photo) {
-        Palette palette = Palette.generate(photo);
-        applyPalette(palette);
+        try {
+            Palette palette = Palette.generate(photo);
+            applyPalette(palette);
+        }
+        catch (IllegalArgumentException exception) {
+            exception.printStackTrace();
+        }
+
     }
 
     private void applyPalette(Palette palette) {

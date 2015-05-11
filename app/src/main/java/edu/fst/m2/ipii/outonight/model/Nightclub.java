@@ -26,6 +26,12 @@ public final class Nightclub extends Establishment {
         this.name = name;
     }
 
+    public Nightclub(String name, String description) {
+        super();
+        this.name = name;
+        this.description = description;
+    }
+
     public List<MusicType> getMusicTypes() {
         if (null == musicTypes) {
             musicTypes = new ArrayList<>();

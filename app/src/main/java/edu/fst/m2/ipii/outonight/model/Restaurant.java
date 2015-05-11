@@ -24,6 +24,12 @@ public final class Restaurant extends Establishment {
         this.name = name;
     }
 
+    public Restaurant(String name, String description) {
+        super();
+        this.name = name;
+        this.description = description;
+    }
+
     public List<CookingType> getCookingTypes() {
         if (null == cookingTypes) {
             cookingTypes = new ArrayList<>();

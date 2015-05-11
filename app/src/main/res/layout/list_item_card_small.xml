@@ -58,8 +58,16 @@
 
         <TextView
             style="@style/CardTitle"
-            android:id="@+id/name_textview"
-            android:text="Lone Pine" />
+            android:id="@+id/name_textview" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/establishment_id" />
 
     </edu.fst.m2.ipii.outonight.ui.view.CardFrameLayout>
+
+
 </FrameLayout>

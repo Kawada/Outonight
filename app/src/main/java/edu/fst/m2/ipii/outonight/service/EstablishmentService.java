@@ -14,5 +14,7 @@ public interface EstablishmentService {
 
     Establishment get(int id);
 
+    List<Establishment> getByName(String name);
+
     List<Establishment> getByType(String type);
 }

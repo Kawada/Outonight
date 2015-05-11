@@ -18,9 +18,9 @@ public class EstablishmentServiceImpl implements EstablishmentService {
     List<Establishment> establishments = new ArrayList<Establishment>() {{
 
         for (int i = 0; i < 5; i++) {
-            add(new Nightclub("Nightclub factice" + i));
-            add(new Restaurant("Restaurant factice" + i));
-            add(new Bar("Bar factice" + i));
+            add(new Nightclub("Nightclub factice " + i, "Un nightclub factice. Position numéro " + i));
+            add(new Restaurant("Restaurant factice " + i, "Un restaurant factice. Position numéro " + i));
+            add(new Bar("Bar factice " + i, "Un bar factice. Position numéro " + i));
         }
 
     }};
@@ -33,6 +33,20 @@ public class EstablishmentServiceImpl implements EstablishmentService {
     @Override
     public Establishment get(int id) {
         return establishments.get(id);
+    }
+
+    @Override
+    public List<Establishment> getByName(String name) {
+
+        List<Establishment> returnedEstablishments = new ArrayList<>();
+
+        for(Establishment cursor : establishments) {
+            if (cursor.getName().equals(name)) {
+                returnedEstablishments.add(cursor);
+            }
+        }
+
+        return returnedEstablishments;
     }
 
     @Override
