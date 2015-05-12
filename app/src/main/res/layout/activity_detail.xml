@@ -28,7 +28,7 @@
                 android:transitionName="photo_hero"
 
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="450dp"
 
                 android:tint="@color/photo_tint"
                 android:scaleType="centerCrop"

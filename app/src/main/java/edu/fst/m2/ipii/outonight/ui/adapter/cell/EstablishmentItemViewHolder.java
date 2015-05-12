@@ -24,7 +24,7 @@ public class EstablishmentItemViewHolder extends RecyclerView.ViewHolder impleme
     @InjectView(R.id.name_textview) TextView nameTextView;
     @InjectView(R.id.establishment_id) TextView establishmentIdTextView;
     //@InjectView(R.id.type_textview) TextView typeTextView;
-    //@InjectView(R.id.photo_imageview) ImageView photoView;
+    @InjectView(R.id.photo) ImageView photoView;
 
     private Context context;
 
@@ -43,6 +43,7 @@ public class EstablishmentItemViewHolder extends RecyclerView.ViewHolder impleme
     public void updateView(Establishment establishment) {
         nameTextView.setText(establishment.getName());
         establishmentIdTextView.setText(String.valueOf(establishment.getId()));
+        photoView.setImageResource(R.drawable.nightclub_header_thumb);
         // Type, photo...
     }
 

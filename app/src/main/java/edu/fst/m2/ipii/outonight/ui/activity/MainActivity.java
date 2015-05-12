@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.SparseArray;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -115,7 +116,37 @@ public class MainActivity extends ActionBarActivity {
                 ActivityOptions.makeSceneTransitionAnimation(this, hero, "photo_hero");
         startActivity(intent, options.toBundle());
 
-        startActivity(intent);
+        // startActivity(intent);
+
+        /*
+        intent.putExtra("lat", 37.6329946);
+        intent.putExtra("lng", -122.4938344);
+        intent.putExtra("zoom", 14.0f);
+        intent.putExtra("title", establishment.getName());
+        intent.putExtra("description", establishment.getDescription());
+
+        /Bitmap bitmap = drawableToBitmap(((ImageView) parent.findViewById(R.id.photo_imageview)).getDrawable());
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] b = baos.toByteArray();
+
+        intent.putExtra("photo", R.drawable.bar_header);
+
+        ImageView hero = (ImageView) parent.findViewById(R.id.photo);
+
+        sPhotoCache.put(intent.getIntExtra("photo", -1),
+                ((BitmapDrawable) hero.getDrawable()).getBitmap());
+
+        ActivityOptions options =
+                ActivityOptions.makeSceneTransitionAnimation(this, hero, "photo_hero");
+        startActivity(intent, options.toBundle());
+         */
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
 
     public MaterialViewPager getmViewPager() {
