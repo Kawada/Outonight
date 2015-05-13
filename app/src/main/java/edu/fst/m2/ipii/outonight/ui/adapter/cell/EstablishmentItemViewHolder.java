@@ -2,6 +2,9 @@ package edu.fst.m2.ipii.outonight.ui.adapter.cell;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,12 +12,16 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import edu.fst.m2.ipii.outonight.R;
 import edu.fst.m2.ipii.outonight.model.Establishment;
 import edu.fst.m2.ipii.outonight.ui.activity.MapsActivity;
 import edu.fst.m2.ipii.outonight.ui.view.CardFrameLayout;
+import edu.fst.m2.ipii.outonight.utils.BitmapUtils;
 
 /**
  * Created by Dimitri on 10/05/2015.
@@ -26,11 +33,24 @@ public class EstablishmentItemViewHolder extends RecyclerView.ViewHolder impleme
     //@InjectView(R.id.type_textview) TextView typeTextView;
     @InjectView(R.id.photo) ImageView photoView;
 
+    /*
+    DualCache<Bitmap> cache = new DualCacheBuilder<Bitmap>("bitmaps", 1, Bitmap.class)
+            .useReferenceInRam(70, new SizeOf<Bitmap>() {
+                @Override
+                public int sizeOf(Bitmap object) {
+                    return 50;
+                }
+            })
+            .useDefaultSerializerInDisk(70, true);
+*/
+    private Map<Integer, Bitmap> bitmapCache;
+
     private Context context;
 
     public EstablishmentItemViewHolder(View view, Context context) {
         super(view);
         this.context = context;
+        bitmapCache = new HashMap<>();
         view.setOnClickListener(this);
         createView();
     }
@@ -43,8 +63,25 @@ public class EstablishmentItemViewHolder extends RecyclerView.ViewHolder impleme
     public void updateView(Establishment establishment) {
         nameTextView.setText(establishment.getName());
         //establishmentIdTextView.setText(String.valueOf(establishment.getId()));
-        photoView.setImageResource(R.drawable.nightclub_header_thumb);
+        //photoView.setImageResource(R.drawable.nightclub_header_thumb);
         // Type, photo...
+
+        Bitmap image;
+
+        if (BitmapUtils.sPhotoCache.get(R.drawable.nightclub_header_thumb) != null) {
+            image = BitmapUtils.sPhotoCache.get(R.drawable.nightclub_header_thumb);
+        }
+        else {
+
+            BitmapUtils.sPhotoCache.put(R.drawable.nightclub_header_thumb, BitmapFactory.decodeResource(context.getResources(),
+                    R.drawable.nightclub_header_thumb));
+
+            image = BitmapUtils.sPhotoCache.get(R.drawable.nightclub_header_thumb);
+
+
+        }
+
+        photoView.setImageDrawable(new BitmapDrawable(context.getResources(), image));
     }
 
     public View getView() {

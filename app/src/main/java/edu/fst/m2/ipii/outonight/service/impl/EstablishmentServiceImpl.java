@@ -21,10 +21,10 @@ public class EstablishmentServiceImpl implements EstablishmentService {
 
         boolean featured;
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 25; i++) {
             try {
 
-                featured = i == 0;
+                featured = i % 10 == 0;
 
             add(new Nightclub.Builder<Nightclub>()
                     .name("Nightclub factice " + i)

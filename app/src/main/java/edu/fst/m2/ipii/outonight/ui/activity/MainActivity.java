@@ -36,11 +36,12 @@ import edu.fst.m2.ipii.outonight.ui.adapter.TabPagerAdapter;
 import edu.fst.m2.ipii.outonight.ui.adapter.cell.EstablishmentItemViewHolder;
 import edu.fst.m2.ipii.outonight.ui.fragment.RecyclerViewFragment;
 import edu.fst.m2.ipii.outonight.ui.fragment.WebViewFragment;
+import edu.fst.m2.ipii.outonight.utils.BitmapUtils;
 
 
 public class MainActivity extends ActionBarActivity {
 
-    public static SparseArray<Bitmap> sPhotoCache = new SparseArray<Bitmap>(4);
+
 
     @Inject
     EstablishmentService establishmentService = new EstablishmentServiceImpl();
@@ -57,6 +58,8 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         ButterKnife.inject(this);
+
+        // DualCacheContextUtils.setContext(getApplicationContext());
 
         setTitle("");
 
@@ -109,7 +112,7 @@ public class MainActivity extends ActionBarActivity {
 
         ImageView hero = (ImageView) parent.findViewById(R.id.photo);
 
-        sPhotoCache.put(intent.getIntExtra("photo", -1),
+        BitmapUtils.sPhotoCache.put(intent.getIntExtra("photo", -1),
                 ((BitmapDrawable) hero.getDrawable()).getBitmap());
 
         ActivityOptions options =

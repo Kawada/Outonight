@@ -53,6 +53,7 @@ import butterknife.InjectView;
 import edu.fst.m2.ipii.outonight.R;
 import edu.fst.m2.ipii.outonight.ui.view.AnimatedPathView;
 import edu.fst.m2.ipii.outonight.ui.view.TransitionAdapter;
+import edu.fst.m2.ipii.outonight.utils.BitmapUtils;
 
 public class DetailActivity extends Activity {
 
@@ -206,7 +207,7 @@ public class DetailActivity extends Activity {
     }
 
     private Bitmap setupPhoto(int resource) {
-        Bitmap bitmap = MainActivity.sPhotoCache.get(resource);
+        Bitmap bitmap = BitmapUtils.sPhotoCache.get(resource);
         ((ImageView) findViewById(R.id.photo)).setImageBitmap(bitmap);
         return bitmap;
     }

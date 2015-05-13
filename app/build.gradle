@@ -49,6 +49,9 @@ dependencies {
     provided 'org.glassfish:javax.annotation:10.0-b28'
     compile 'com.android.support:palette-v7:21.0.3'
     compile 'com.caverock:androidsvg:1.2.1'
+    //compile 'br.com.liveo:navigationdrawer-material:1.0.5'
+    //compile 'com.vincentbrison.openlibraries.android:dualcache:2.0.0@jar'
+    // compile 'com.fasterxml.jackson.core:jackson-core:2.5.3'
 }
 
 apply plugin: 'com.android.application'
