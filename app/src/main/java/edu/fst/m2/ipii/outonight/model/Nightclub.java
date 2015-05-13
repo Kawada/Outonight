@@ -17,21 +17,6 @@ public final class Nightclub extends Establishment {
     @Column(name = "musicTypes")
     private List<MusicType> musicTypes;
 
-    public Nightclub() {
-        super();
-    }
-
-    public Nightclub(String name) {
-        super();
-        this.name = name;
-    }
-
-    public Nightclub(String name, String description) {
-        super();
-        this.name = name;
-        this.description = description;
-    }
-
     public List<MusicType> getMusicTypes() {
         if (null == musicTypes) {
             musicTypes = new ArrayList<>();

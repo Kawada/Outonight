@@ -1,5 +1,7 @@
 package edu.fst.m2.ipii.outonight.service.impl;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,10 +19,35 @@ public class EstablishmentServiceImpl implements EstablishmentService {
 
     List<Establishment> establishments = new ArrayList<Establishment>() {{
 
+        boolean featured;
+
         for (int i = 0; i < 5; i++) {
-            add(new Nightclub("Nightclub factice " + i, "Un nightclub factice. Position numéro " + i));
-            add(new Restaurant("Restaurant factice " + i, "Un restaurant factice. Position numéro " + i));
-            add(new Bar("Bar factice " + i, "Un bar factice. Position numéro " + i));
+            try {
+
+                featured = i == 0;
+
+            add(new Nightclub.Builder<Nightclub>()
+                    .name("Nightclub factice " + i)
+                    .description("Un nightclub factice. Position numéro " + i)
+                    .featured(featured)
+                    .build(Nightclub.class));
+
+            add(new Restaurant.Builder<Restaurant>()
+                    .name("Restaurant factice " + i)
+                    .description("Un restaurant factice. Position numéro " + i)
+                    .featured(featured)
+                    .build(Restaurant.class));
+
+            add(new Bar.Builder<Bar>()
+                    .name("Bar factice " + i)
+                    .description("Un bar factice. Position numéro " + i)
+                    .featured(featured)
+                    .build(Bar.class));
+
+            } catch (IllegalAccessException | InstantiationException e) {
+                Log.e("EstablishmentService", "erreur lors de l'ajout d'établissement", e);
+            }
+
         }
 
     }};

@@ -17,17 +17,6 @@ public final class Bar extends Establishment {
     @Column(name = "ambienceTypes")
     private List<AmbienceType> ambienceTypes;
 
-    public Bar(String name) {
-        super();
-        this.name = name;
-    }
-
-    public Bar(String name, String description) {
-        super();
-        this.name = name;
-        this.description = description;
-    }
-
     public List<AmbienceType> getAmbienceTypes() {
         if (null == ambienceTypes) {
             ambienceTypes = new ArrayList<>();

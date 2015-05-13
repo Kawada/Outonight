@@ -22,7 +22,7 @@ import edu.fst.m2.ipii.outonight.ui.view.CardFrameLayout;
 public class EstablishmentItemViewHolder extends RecyclerView.ViewHolder implements CardFrameLayout.OnClickListener {
 
     @InjectView(R.id.name_textview) TextView nameTextView;
-    @InjectView(R.id.establishment_id) TextView establishmentIdTextView;
+    //@InjectView(R.id.establishment_id) TextView establishmentIdTextView;
     //@InjectView(R.id.type_textview) TextView typeTextView;
     @InjectView(R.id.photo) ImageView photoView;
 
@@ -42,7 +42,7 @@ public class EstablishmentItemViewHolder extends RecyclerView.ViewHolder impleme
 
     public void updateView(Establishment establishment) {
         nameTextView.setText(establishment.getName());
-        establishmentIdTextView.setText(String.valueOf(establishment.getId()));
+        //establishmentIdTextView.setText(String.valueOf(establishment.getId()));
         photoView.setImageResource(R.drawable.nightclub_header_thumb);
         // Type, photo...
     }

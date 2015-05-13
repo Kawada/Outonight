@@ -19,17 +19,6 @@ public final class Restaurant extends Establishment {
     @Column(name = "cookingTypes")
     private List<CookingType> cookingTypes;
 
-    public Restaurant(String name) {
-        super();
-        this.name = name;
-    }
-
-    public Restaurant(String name, String description) {
-        super();
-        this.name = name;
-        this.description = description;
-    }
-
     public List<CookingType> getCookingTypes() {
         if (null == cookingTypes) {
             cookingTypes = new ArrayList<>();

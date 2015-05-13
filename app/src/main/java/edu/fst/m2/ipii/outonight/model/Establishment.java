@@ -75,4 +75,57 @@ public abstract class Establishment extends Model {
         }
         return photos;
     }
+
+    public static class Builder<T> {
+        private String name;
+        private String description;
+        private boolean featured;
+        private Contact contact;
+        private Address address;
+        private List<Photo> photos;
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder featured(boolean featured) {
+            this.featured = featured;
+            return this;
+        }
+
+        public Builder contact(Contact contact) {
+            this.contact = contact;
+            return this;
+        }
+
+        public Builder address(Address address) {
+            this.address = address;
+            return this;
+        }
+
+        public Builder photos(List<Photo> photos) {
+            this.photos = photos;
+            return this;
+        }
+
+        public Establishment build(Class<? extends Establishment> clazz) throws IllegalAccessException, InstantiationException {
+
+            Establishment establishment = clazz.newInstance();
+
+            establishment.setName(name);
+            establishment.setDescription(description);
+            establishment.setFeatured(featured);
+            establishment.setContact(contact);
+            establishment.setAddress(address);
+            //establishment.getPhotos().addAll(photos);
+
+            return establishment;
+        }
+    }
 }

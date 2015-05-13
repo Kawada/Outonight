@@ -13,6 +13,7 @@
     <file url="file://$PROJECT_DIR$/app/src/main/java/edu/fst/m2/ipii/outonight/ui/view/SvgHelper.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/edu/fst/m2/ipii/outonight/ui/view/TransitionAdapter.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/anim" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/drawable-mdpi/ic_ab_up_white_mini.png" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/drawable-xxhdpi/circle.xml" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/drawable-xxhdpi/flying.png" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/drawable-xxhdpi/logo_white.png" charset="windows-1252" />
@@ -42,11 +43,12 @@
     <file url="file://$PROJECT_DIR$/app/src/main/res/layout/header_logo_text.xml" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/layout/list_item_card_big.xml" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/layout/list_item_card_small.xml" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/layout/transparent_toolbar.xml" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/menu/detail.xml" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/raw" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/values-w820dp/attrs.xml" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/values-w820dp/theme.xml" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/values/attrs.xml" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/values/colors.xml" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/app/src/main/res/values/theme.xml" charset="windows-1252" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

@@ -28,6 +28,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Bundle;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.Toolbar;
 import android.transition.Transition;
 import android.util.DisplayMetrics;
 import android.view.Menu;
@@ -47,15 +48,23 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import edu.fst.m2.ipii.outonight.R;
 import edu.fst.m2.ipii.outonight.ui.view.AnimatedPathView;
 import edu.fst.m2.ipii.outonight.ui.view.TransitionAdapter;
 
 public class DetailActivity extends Activity {
+
+    //@InjectView(R.id.toolbar)
+    //Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        ButterKnife.inject(this);
 
         Bitmap photo = setupPhoto(getIntent().getIntExtra("photo", R.drawable.photo1));
 
@@ -171,8 +180,10 @@ public class DetailActivity extends Activity {
         TextView descriptionView = (TextView) findViewById(R.id.description);
         descriptionView.setTextColor(palette.getLightVibrantColor(0));
 
-        colorRipple(R.id.info, palette.getDarkMutedColor(0),
-                palette.getDarkVibrantColor(0));
+        /*colorRipple(R.id.info, palette.getDarkMutedColor(0),
+                palette.getDarkVibrantColor(0));*/
+        colorRipple(R.id.info, palette.getMutedColor(0),
+                palette.getVibrantColor(0));
         colorRipple(R.id.star, palette.getMutedColor(0),
                 palette.getVibrantColor(0));
 
