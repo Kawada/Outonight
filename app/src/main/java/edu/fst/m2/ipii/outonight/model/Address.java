@@ -26,10 +26,10 @@ public final class Address extends Model {
     private String postalCode;
 
     @Column(name = "lat", notNull = true, indexGroups = { "latlng" })
-    private Long lat;
+    private Double lat;
 
     @Column(name = "lng", notNull = true, indexGroups = { "latlng" })
-    private Long lng;
+    private Double lng;
 
     public String getLine1() {
         return line1;
@@ -71,19 +71,19 @@ public final class Address extends Model {
         this.postalCode = postalCode;
     }
 
-    public Long getLat() {
+    public Double getLat() {
         return lat;
     }
 
-    public void setLat(Long lat) {
+    public void setLat(Double lat) {
         this.lat = lat;
     }
 
-    public Long getLng() {
+    public Double getLng() {
         return lng;
     }
 
-    public void setLng(Long lng) {
+    public void setLng(Double lng) {
         this.lng = lng;
     }
 }

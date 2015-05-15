@@ -33,11 +33,11 @@
             android:value="Outonight.db" />
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="1" />
+            android:value="4" />
 
         <meta-data
             android:name="AA_MODELS"
-            android:value="edu.fst.m2.ipii.outonight.Address, edu.fst.m2.ipii.outonight.Bar, edu.fst.m2.ipii.outonight.Contact, edu.fst.m2.ipii.outonight.Establishment, edu.fst.m2.ipii.outonight.Nightclub, edu.fst.m2.ipii.outonight.Photo, edu.fst.m2.ipii.outonight.Restaurant" />
+            android:value="edu.fst.m2.ipii.outonight.Address, edu.fst.m2.ipii.outonight.Contact, edu.fst.m2.ipii.outonight.Establishment, edu.fst.m2.ipii.outonight.Photo" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

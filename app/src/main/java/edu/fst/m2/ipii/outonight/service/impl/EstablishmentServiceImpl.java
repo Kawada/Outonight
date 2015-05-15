@@ -2,103 +2,84 @@ package edu.fst.m2.ipii.outonight.service.impl;
 
 import android.util.Log;
 
+import com.activeandroid.Model;
+import com.activeandroid.query.Select;
+import com.google.common.collect.Lists;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.fst.m2.ipii.outonight.constants.WebserviceConstants;
+import edu.fst.m2.ipii.outonight.dto.type.AmbienceType;
+import edu.fst.m2.ipii.outonight.dto.type.CookingType;
 import edu.fst.m2.ipii.outonight.dto.type.EstablishmentType;
+import edu.fst.m2.ipii.outonight.dto.type.MusicType;
 import edu.fst.m2.ipii.outonight.model.Bar;
 import edu.fst.m2.ipii.outonight.model.Establishment;
 import edu.fst.m2.ipii.outonight.model.Nightclub;
 import edu.fst.m2.ipii.outonight.model.Restaurant;
 import edu.fst.m2.ipii.outonight.service.EstablishmentService;
+import edu.fst.m2.ipii.outonight.ws.EstablishmentApi;
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by Dimitri on 10/05/2015.
  */
 public class EstablishmentServiceImpl implements EstablishmentService {
 
-    List<Establishment> establishments = new ArrayList<Establishment>() {{
+    private static EstablishmentService instance;
 
-        boolean featured;
-
-        for (int i = 0; i < 25; i++) {
-            try {
-
-                featured = i % 10 == 0;
-
-            add(new Nightclub.Builder<Nightclub>()
-                    .name("Nightclub factice " + i)
-                    .description("Un nightclub factice. Position numéro " + i)
-                    .featured(featured)
-                    .build(Nightclub.class));
-
-            add(new Restaurant.Builder<Restaurant>()
-                    .name("Restaurant factice " + i)
-                    .description("Un restaurant factice. Position numéro " + i)
-                    .featured(featured)
-                    .build(Restaurant.class));
-
-            add(new Bar.Builder<Bar>()
-                    .name("Bar factice " + i)
-                    .description("Un bar factice. Position numéro " + i)
-                    .featured(featured)
-                    .build(Bar.class));
-
-            } catch (IllegalAccessException | InstantiationException e) {
-                Log.e("EstablishmentService", "erreur lors de l'ajout d'établissement", e);
-            }
-
+    public static EstablishmentService getInstance() {
+        if (null == instance) {
+            instance = new EstablishmentServiceImpl();
         }
+        return instance;
+    }
 
-    }};
+    private EstablishmentServiceImpl() {
 
-    @Override
-    public List<Establishment> getAll() {
-        return establishments;
     }
 
     @Override
-    public Establishment get(int id) {
-        return establishments.get(id);
+    public List<Establishment> getAllCached() {
+        return getAllEstablishments();
     }
 
     @Override
-    public List<Establishment> getByName(String name) {
-
-        List<Establishment> returnedEstablishments = new ArrayList<>();
-
-        for(Establishment cursor : establishments) {
-            if (cursor.getName().equals(name)) {
-                returnedEstablishments.add(cursor);
-            }
-        }
-
-        return returnedEstablishments;
+    public Establishment getCached(int id) {
+        return new Select().from(Establishment.class).orderBy("name ASC").where("establishmentId = ?", id).executeSingle();
     }
 
     @Override
-    public List<Establishment> getByType(String type) {
-
-        Class targetedClass = Establishment.class;
-
-        if (EstablishmentType.BARS.equals(type)) {
-            targetedClass = Bar.class;
-        }
-        else if (EstablishmentType.RESTAURANTS.equals(type)) {
-            targetedClass = Restaurant.class;
-        }
-        else if (EstablishmentType.NIGHTCLUBS.equals(type)) {
-            targetedClass = Nightclub.class;
-        }
-
-        List<Establishment> returnedEstablishments = new ArrayList<>();
-
-        for(Establishment cursor : establishments) {
-            if ((cursor.getClass().equals(targetedClass)) || (Establishment.class.equals(targetedClass) && cursor.isFeatured())) {
-                returnedEstablishments.add(cursor);
-            }
-        }
-
-        return returnedEstablishments;
+    public List<Establishment> getCachedByName(String name) {
+        return new Select().from(Establishment.class).orderBy("name ASC").where("name = ?", name).execute();
     }
+
+    @Override
+    public List<Establishment> getCachedByType(String type) {
+
+        if (type == null) {
+            return getAllFeaturedEstablishments();
+        }
+
+        List<Establishment> establishments = new Select().from(Establishment.class).orderBy("name ASC").where("type = ?", type).execute();
+
+        return  establishments;
+
+    }
+
+
+    private List<Establishment> getAllEstablishments() {
+        return new Select().from(Establishment.class).orderBy("name ASC").execute();
+    }
+
+    private List<Establishment> getAllFeaturedEstablishments() {
+        return new Select().from(Establishment.class).orderBy("name ASC").where("featured = ?", true).execute();
+    }
+
+
+
 }

@@ -4,14 +4,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnItemClick;
 import edu.fst.m2.ipii.outonight.R;
+import edu.fst.m2.ipii.outonight.ui.adapter.DrawerListAdapter;
 
 
 /**
@@ -27,6 +31,9 @@ public class DrawerFragment extends Fragment {
 
         ButterKnife.inject(this, view);
 
+        DrawerListAdapter adapter = new DrawerListAdapter(getActivity());
+        listView.setAdapter(adapter);
+
         View header = inflater.inflate(R.layout.headerview, listView, false);
         listView.addHeaderView(header, null, false);
 
@@ -34,4 +41,7 @@ public class DrawerFragment extends Fragment {
     }
 
 
+    @OnItemClick(R.id.drawer_listview) void onItemClick(int position) {
+        Toast.makeText(getActivity(), "Clicked position " + position + "!", Toast.LENGTH_SHORT).show();
+    }
 }

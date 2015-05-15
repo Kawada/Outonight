@@ -4,17 +4,19 @@ import java.util.List;
 
 import edu.fst.m2.ipii.outonight.dto.type.EstablishmentType;
 import edu.fst.m2.ipii.outonight.model.Establishment;
+import retrofit.Callback;
 
 /**
  * Created by Dimitri on 10/05/2015.
  */
 public interface EstablishmentService {
 
-    List<Establishment> getAll();
+    List<Establishment> getAllCached();
 
-    Establishment get(int id);
+    Establishment getCached(int id);
 
-    List<Establishment> getByName(String name);
+    List<Establishment> getCachedByName(String name);
 
-    List<Establishment> getByType(String type);
+    List<Establishment> getCachedByType(String type);
+
 }

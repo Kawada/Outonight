@@ -17,6 +17,6 @@ public class EstablishmentServiceModule {
     //@Provides
     //@Singleton
     public EstablishmentService provideEstablishmentService() {
-        return new EstablishmentServiceImpl();
+        return EstablishmentServiceImpl.getInstance();
     }
 }

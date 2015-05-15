@@ -14,10 +14,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.SparseArray;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.florent37.materialviewpager.MaterialViewPager;
 
@@ -37,16 +39,18 @@ import edu.fst.m2.ipii.outonight.ui.adapter.cell.EstablishmentItemViewHolder;
 import edu.fst.m2.ipii.outonight.ui.fragment.RecyclerViewFragment;
 import edu.fst.m2.ipii.outonight.ui.fragment.WebViewFragment;
 import edu.fst.m2.ipii.outonight.utils.BitmapUtils;
+import icepick.Icepick;
+import icepick.Icicle;
 
 
 public class MainActivity extends ActionBarActivity {
 
 
-
     @Inject
-    EstablishmentService establishmentService = new EstablishmentServiceImpl();
+    EstablishmentService establishmentService = EstablishmentServiceImpl.getInstance();
 
-    @InjectView(R.id.materialViewPager) MaterialViewPager mViewPager;
+    @InjectView(R.id.materialViewPager)
+    MaterialViewPager mViewPager;
 
     @InjectView(R.id.drawer_layout) DrawerLayout mDrawer;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -58,6 +62,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         ButterKnife.inject(this);
+        Icepick.restoreInstanceState(this, savedInstanceState);
 
         // DualCacheContextUtils.setContext(getApplicationContext());
 
@@ -101,7 +106,7 @@ public class MainActivity extends ActionBarActivity {
         TextView textView = (TextView) parent.findViewById(R.id.name_textview);
         String establishmentName = textView.getText().toString();
 
-        Establishment establishment = establishmentService.getByName(establishmentName).get(0);
+        Establishment establishment = establishmentService.getCachedByName(establishmentName).get(0);
 
         intent.putExtra("lat", 37.6329946);
         intent.putExtra("lng", -122.4938344);
@@ -150,6 +155,29 @@ public class MainActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
+        if (item.getItemId() == R.id.action_maps) {
+            Toast.makeText(this, "Transfert vers le cartes...", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, MapsActivity.class);
+
+            startActivity(intent);
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Icepick.saveInstanceState(this, outState);
     }
 
     public MaterialViewPager getmViewPager() {

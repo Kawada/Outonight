@@ -5,9 +5,9 @@ package edu.fst.m2.ipii.outonight.dto.type;
  */
 public class EstablishmentType {
 
-    public static String BARS = "Bars";
+    public static String BARS = "Bar";
 
-    public static String RESTAURANTS = "Restos";
+    public static String RESTAURANTS = "Restaurant";
 
-    public static String NIGHTCLUBS = "Boites";
+    public static String NIGHTCLUBS = "Nightclub";
 }

@@ -1,6 +1,5 @@
 package edu.fst.m2.ipii.outonight.ui.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,24 +12,18 @@ import android.view.ViewGroup;
 import com.github.florent37.materialviewpager.MaterialViewPagerHelper;
 import com.github.florent37.materialviewpager.adapter.RecyclerViewMaterialAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnItemClick;
 import edu.fst.m2.ipii.outonight.R;
 import edu.fst.m2.ipii.outonight.dto.type.EstablishmentType;
 import edu.fst.m2.ipii.outonight.model.Bar;
-import edu.fst.m2.ipii.outonight.model.Establishment;
 import edu.fst.m2.ipii.outonight.model.Nightclub;
 import edu.fst.m2.ipii.outonight.model.Restaurant;
 import edu.fst.m2.ipii.outonight.service.EstablishmentService;
 import edu.fst.m2.ipii.outonight.service.impl.EstablishmentServiceImpl;
-import edu.fst.m2.ipii.outonight.ui.activity.MapsActivity;
-import edu.fst.m2.ipii.outonight.ui.adapter.TestRecyclerViewAdapter;
+import edu.fst.m2.ipii.outonight.ui.adapter.EstablishmentRecyclerViewAdapter;
 
 /**
  * Created by dleguis on 10/05/2015.
@@ -40,10 +33,7 @@ public class RecyclerViewFragment extends Fragment {
     @InjectView(R.id.recyclerView)
     RecyclerView mRecyclerView;
 
-    private RecyclerView.Adapter mAdapter;
-
-    @Inject
-    EstablishmentService establishmentService = new EstablishmentServiceImpl();
+    private static RecyclerView.Adapter mAdapter;
 
     public static RecyclerViewFragment newInstance(Class clazz) {
         RecyclerViewFragment recyclerViewFragment = new RecyclerViewFragment();
@@ -81,11 +71,13 @@ public class RecyclerViewFragment extends Fragment {
 
         String type = getArguments().getString("Type");
 
-        mAdapter = new RecyclerViewMaterialAdapter(new TestRecyclerViewAdapter(establishmentService.getByType(type), getActivity()));
+        mAdapter = new RecyclerViewMaterialAdapter(new EstablishmentRecyclerViewAdapter(type, getActivity()));
         mRecyclerView.setAdapter(mAdapter);
 
         MaterialViewPagerHelper.registerRecyclerView(getActivity(), mRecyclerView, null);
     }
 
-
+    public static void notifyDataChanged() {
+        mAdapter.notifyDataSetChanged();
+    }
 }
