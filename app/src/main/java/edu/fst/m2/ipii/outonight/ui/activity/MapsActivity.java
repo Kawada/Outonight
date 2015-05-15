@@ -1,30 +1,66 @@
 package edu.fst.m2.ipii.outonight.ui.activity;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import edu.fst.m2.ipii.outonight.R;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class MapsActivity extends FragmentActivity {
+import javax.inject.Inject;
+
+import edu.fst.m2.ipii.outonight.R;
+import edu.fst.m2.ipii.outonight.model.Establishment;
+import edu.fst.m2.ipii.outonight.service.EstablishmentService;
+import edu.fst.m2.ipii.outonight.service.impl.EstablishmentServiceImpl;
+
+public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+
+    @Inject
+    EstablishmentService establishmentService = EstablishmentServiceImpl.getInstance();
+
+    Map<Marker, Integer> establishmentMarkers = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
         setUpMapIfNeeded();
+
+        setUpMapZoom();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         setUpMapIfNeeded();
+    }
+
+    private void setUpMapZoom() {
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (Map.Entry<Marker, Integer> entry : establishmentMarkers.entrySet()) {
+            builder.include(entry.getKey().getPosition());
+        }
+        LatLngBounds bounds = builder.build();
+
+        int padding = 0; // offset from edges of the map in pixels
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+
+        mMap.moveCamera(cu);
     }
 
     /**
@@ -62,6 +98,26 @@ public class MapsActivity extends FragmentActivity {
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+
+        for (Establishment establishment : establishmentService.getAllCached()) {
+
+            establishmentMarkers.put(mMap.addMarker(new MarkerOptions().position(new LatLng(establishment.getAddress().getLat(), establishment.getAddress().getLng())).title(establishment.getName())),
+                                    establishment.getEstablishmentId());
+        }
+
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+
+        Intent intent = new Intent(this, DetailActivity.class);
+
+        intent.putExtra("establishmentId", establishmentMarkers.get(marker));
+
+        startActivity(intent);
+
+        Toast.makeText(this, "Passage à la vue détail....", Toast.LENGTH_SHORT).show();
+
+        return false;
     }
 }
