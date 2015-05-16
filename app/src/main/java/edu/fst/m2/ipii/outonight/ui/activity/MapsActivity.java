@@ -1,8 +1,11 @@
 package edu.fst.m2.ipii.outonight.ui.activity;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -24,6 +27,7 @@ import edu.fst.m2.ipii.outonight.R;
 import edu.fst.m2.ipii.outonight.model.Establishment;
 import edu.fst.m2.ipii.outonight.service.EstablishmentService;
 import edu.fst.m2.ipii.outonight.service.impl.EstablishmentServiceImpl;
+import edu.fst.m2.ipii.outonight.utils.BitmapUtils;
 
 public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener {
 
@@ -32,7 +36,9 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     @Inject
     EstablishmentService establishmentService = EstablishmentServiceImpl.getInstance();
 
-    Map<Marker, Integer> establishmentMarkers = new HashMap<>();
+    Map<Marker, Establishment> establishmentMarkers = new HashMap<>();
+
+    Marker selectedMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +46,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         setContentView(R.layout.activity_maps);
 
         setUpMapIfNeeded();
+
+        mMap.setOnMarkerClickListener(this);
 
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
@@ -57,7 +65,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
     private void setUpMapZoom() {
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        for (Map.Entry<Marker, Integer> entry : establishmentMarkers.entrySet()) {
+        for (Map.Entry<Marker, Establishment> entry : establishmentMarkers.entrySet()) {
             builder.include(entry.getKey().getPosition());
         }
         LatLngBounds bounds = builder.build();
@@ -107,7 +115,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         for (Establishment establishment : establishmentService.getAllCached()) {
 
             establishmentMarkers.put(mMap.addMarker(new MarkerOptions().position(new LatLng(establishment.getAddress().getLat(), establishment.getAddress().getLng())).title(establishment.getName())),
-                                    establishment.getEstablishmentId());
+                                    establishment);
         }
 
     }
@@ -115,13 +123,19 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     @Override
     public boolean onMarkerClick(Marker marker) {
 
-        Intent intent = new Intent(this, DetailActivity.class);
+        if (marker.equals(selectedMarker)) {
+            Intent intent = new Intent(this, DetailActivity.class);
 
-        intent.putExtra("establishmentId", establishmentMarkers.get(marker));
+            intent.putExtra("establishmentId", establishmentMarkers.get(marker).getEstablishmentId());
 
-        startActivity(intent);
+            intent.putExtra("photo", establishmentMarkers.get(marker).getEstablishmentId());
 
-        Toast.makeText(this, "Passage à la vue détail....", Toast.LENGTH_SHORT).show();
+            startActivity(intent);
+
+        }
+        else {
+            selectedMarker = marker;
+        }
 
         return false;
     }

@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
@@ -64,7 +65,7 @@ public class EstablishmentItemViewHolder extends RecyclerView.ViewHolder impleme
         ButterKnife.inject(this, itemView);
     }
 
-    public void updateView(Establishment establishment) {
+    public void updateView(final Establishment establishment) {
         nameTextView.setText(establishment.getName());
         //establishmentIdTextView.setText(String.valueOf(establishment.getId()));
         //photoView.setImageResource(R.drawable.nightclub_header_thumb);
@@ -91,7 +92,18 @@ public class EstablishmentItemViewHolder extends RecyclerView.ViewHolder impleme
 
         Log.d(toString(), "photos de " + establishment.getName() + " : " + establishment.getPhoto());
 
-        Picasso.with(context).load(WebserviceConstants.WS_IMG_URL + "/" + establishment.getPhoto()).into(photoView);
+        Picasso.with(context).load(WebserviceConstants.WS_IMG_URL + "/" + establishment.getPhoto()).into(photoView, new Callback() {
+            @Override
+            public void onSuccess() {
+                BitmapUtils.sPhotoCache.put(establishment.getEstablishmentId(), ((BitmapDrawable) photoView.getDrawable()).getBitmap());
+            }
+
+            @Override
+            public void onError() {
+                Log.e(toString(), "Erreur Picasso pour l'image" + establishment.getPhoto());
+            }
+        });
+
     }
 
     public View getView() {

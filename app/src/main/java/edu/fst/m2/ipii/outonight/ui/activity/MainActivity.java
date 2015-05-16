@@ -108,12 +108,9 @@ public class MainActivity extends ActionBarActivity {
 
         intent.putExtra("establishmentId", establishment.getEstablishmentId());
 
-        intent.putExtra("photo", R.drawable.nightclub_header_thumb);
+        intent.putExtra("photo", establishment.getEstablishmentId());
 
         ImageView hero = (ImageView) parent.findViewById(R.id.photo);
-
-        BitmapUtils.sPhotoCache.put(intent.getIntExtra("photo", -1),
-                ((BitmapDrawable) hero.getDrawable()).getBitmap());
 
         ActivityOptions options =
                 ActivityOptions.makeSceneTransitionAnimation(this, hero, "photo_hero");

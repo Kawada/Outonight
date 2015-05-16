@@ -4,7 +4,6 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
-import org.parceler.Parcel;
 
 import java.util.ArrayList;
 import java.util.List;
