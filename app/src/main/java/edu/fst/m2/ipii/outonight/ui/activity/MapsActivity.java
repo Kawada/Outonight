@@ -208,7 +208,7 @@ public class MapsActivity extends ActionBarActivity implements GoogleMap.OnMarke
     public void onProviderEnabled(String provider) {
 
     }
-    
+
     @Override
     public void onProviderDisabled(String provider) {
 
