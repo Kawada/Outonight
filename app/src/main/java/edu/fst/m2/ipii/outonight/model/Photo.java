@@ -4,6 +4,8 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
+import org.parceler.Parcel;
+
 /**
  * Created by Dimitri on 09/05/2015.
  */
@@ -13,6 +15,8 @@ public final class Photo extends Model {
     private String path;
     @Column(name = "description")
     private String description;
+    @Column(name = "establishment")
+    private Establishment establishment;
 
     public String getPath() {
         return path;
@@ -28,5 +32,13 @@ public final class Photo extends Model {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Establishment getEstablishment() {
+        return establishment;
+    }
+
+    public void setEstablishment(Establishment establishment) {
+        this.establishment = establishment;
     }
 }

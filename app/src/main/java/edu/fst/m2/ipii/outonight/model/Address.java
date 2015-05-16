@@ -31,6 +31,10 @@ public final class Address extends Model {
     @Column(name = "lng", notNull = true, indexGroups = { "latlng" })
     private Double lng;
 
+    public Address() {
+        super();
+    }
+
     public String getLine1() {
         return line1;
     }
@@ -86,4 +90,16 @@ public final class Address extends Model {
     public void setLng(Double lng) {
         this.lng = lng;
     }
+
+    @Override
+    public String toString() {
+        return "Address{" +
+                "line1='" + line1 + '\'' +
+                ", lat=" + lat +
+                ", lng=" + lng +
+                ", city='" + city + '\'' +
+                '}';
+    }
+
+
 }

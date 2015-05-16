@@ -7,7 +7,11 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.fst.m2.ipii.outonight.R;
+import edu.fst.m2.ipii.outonight.dto.type.EstablishmentType;
 import edu.fst.m2.ipii.outonight.model.Bar;
 import edu.fst.m2.ipii.outonight.model.Establishment;
 import edu.fst.m2.ipii.outonight.model.Nightclub;
@@ -23,24 +27,21 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
     private MainActivity activity;
     private LayoutInflater inflater;
     int oldPosition = -1;
+    List<Fragment> fragments = new ArrayList<>();
 
     public TabPagerAdapter(MainActivity activity, FragmentManager fm) {
         super(fm);
         this.activity = activity;
+
+        fragments.add(RecyclerViewFragment.newInstance(null));
+        fragments.add(RecyclerViewFragment.newInstance(EstablishmentType.RESTAURANTS));
+        fragments.add(RecyclerViewFragment.newInstance(EstablishmentType.BARS));
+        fragments.add(RecyclerViewFragment.newInstance(EstablishmentType.NIGHTCLUBS));
     }
 
     @Override
     public Fragment getItem(int position) {
-        switch (position) {
-            case 1:
-                return RecyclerViewFragment.newInstance(Restaurant.class);
-            case 2:
-                return RecyclerViewFragment.newInstance(Bar.class);
-            case 3:
-                return RecyclerViewFragment.newInstance(Nightclub.class);
-            default:
-                return RecyclerViewFragment.newInstance(Establishment.class);
-        }
+        return fragments.get(position);
     }
 
     @Override
@@ -80,7 +81,7 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 4;
+        return fragments.size();
     }
 
     @Override

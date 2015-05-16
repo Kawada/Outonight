@@ -20,4 +20,5 @@
 
     <dimen name="drawer_header_photo_margin_top">40dp</dimen>
     <dimen name="drawer_header_element_margin_top">50dp</dimen>
+
 </resources>

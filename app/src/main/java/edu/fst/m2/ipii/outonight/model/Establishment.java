@@ -4,6 +4,8 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,14 +34,20 @@ public class Establishment extends Model {
     @Column(name = "featured")
     protected boolean featured;
 
+    @Column(name = "stared")
+    protected boolean stared;
+
+    @Column(name = "photo")
+    protected String photo;
+
     @Column(name = "contact")
     protected Contact contact;
 
-    @Column(name = "address")
+    @Column(name = "address", onUpdate = Column.ForeignKeyAction.CASCADE, onDelete = Column.ForeignKeyAction.CASCADE)
     protected Address address;
 
-    @Column(name = "photos")
-    protected List<Photo> photos;
+    // @Column(name = "photos")
+    // protected List<Photo> photos;
 
 
     public int getEstablishmentId() {
@@ -82,6 +90,22 @@ public class Establishment extends Model {
         this.featured = featured;
     }
 
+    public boolean isStared() {
+        return stared;
+    }
+
+    public void setStared(boolean stared) {
+        this.stared = stared;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
     public Contact getContact() {
         return contact;
     }
@@ -98,12 +122,14 @@ public class Establishment extends Model {
         this.address = address;
     }
 
+    /*
     public List<Photo> getPhotos() {
         if (null == photos) {
             photos = new ArrayList<>();
         }
         return photos;
     }
+    */
 
     public Nightclub toNightClub(List<MusicType> musicTypes) {
         Nightclub nightclub = new Nightclub();
@@ -164,6 +190,17 @@ public class Establishment extends Model {
         int result = super.hashCode();
         result = 31 * result + establishmentId;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Establishment{" +
+                "establishmentId=" + establishmentId +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", address=" + address +
+                ", featured=" + featured +
+                '}';
     }
 
     public static class Builder<T> {

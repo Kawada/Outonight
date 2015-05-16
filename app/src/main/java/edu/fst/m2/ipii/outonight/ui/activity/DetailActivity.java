@@ -28,7 +28,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Bundle;
 import android.support.v7.graphics.Palette;
-import android.support.v7.widget.Toolbar;
 import android.transition.Transition;
 import android.util.DisplayMetrics;
 import android.view.Menu;
@@ -41,16 +40,20 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import edu.fst.m2.ipii.outonight.R;
+import edu.fst.m2.ipii.outonight.model.Establishment;
+import edu.fst.m2.ipii.outonight.service.EstablishmentService;
+import edu.fst.m2.ipii.outonight.service.impl.EstablishmentServiceImpl;
 import edu.fst.m2.ipii.outonight.ui.view.AnimatedPathView;
 import edu.fst.m2.ipii.outonight.ui.view.TransitionAdapter;
 import edu.fst.m2.ipii.outonight.utils.BitmapUtils;
@@ -60,12 +63,24 @@ public class DetailActivity extends Activity {
     //@InjectView(R.id.toolbar)
     //Toolbar toolbar;
 
+    @Inject
+    EstablishmentService establishmentService = EstablishmentServiceImpl.getInstance();
+
+    @InjectView(R.id.title) TextView titleView;
+    @InjectView(R.id.description) TextView descriptionView;
+    @InjectView(R.id.star_container) AnimatedPathView starContainer ;
+
+    private Establishment establishment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
         ButterKnife.inject(this);
+
+        int establishmentId = getIntent().getIntExtra("establishmentId", 0);
+        establishment = establishmentService.getCached(establishmentId);
 
         Bitmap photo = setupPhoto(getIntent().getIntExtra("photo", R.drawable.photo1));
 
@@ -89,6 +104,10 @@ public class DetailActivity extends Activity {
                 findViewById(R.id.star).animate().alpha(1.0f);
 
                 getWindow().getEnterTransition().removeListener(this);
+
+                if (establishment.isStared()) {
+                    toggleStarView(false);
+                }
             }
         });
     }
@@ -111,19 +130,16 @@ public class DetailActivity extends Activity {
     }
 
     private void setupText() {
-        TextView titleView = (TextView) findViewById(R.id.title);
-        titleView.setText(getIntent().getStringExtra("title"));
-
-        TextView descriptionView = (TextView) findViewById(R.id.description);
-        descriptionView.setText(getIntent().getStringExtra("description"));
+        titleView.setText(establishment.getName());
+        descriptionView.setText(establishment.getDescription());
     }
 
     private void setupMap() {
         GoogleMap map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
 
-        double lat = getIntent().getDoubleExtra("lat", 37.6329946);
-        double lng = getIntent().getDoubleExtra("lng", -122.4938344);
-        float zoom = getIntent().getFloatExtra("zoom", 15.0f);
+        double lat = establishment.getAddress().getLat();
+        double lng = establishment.getAddress().getLng();
+        float zoom = 14.0f;
 
         LatLng position = new LatLng(lat, lng);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(position, zoom));
@@ -173,27 +189,31 @@ public class DetailActivity extends Activity {
     }
 
     private void applyPalette(Palette palette) {
-        getWindow().setBackgroundDrawable(new ColorDrawable(palette.getDarkMutedColor(0)));
+
+        int defaultTextColorId = R.color.red;
+        int defaultBackgroundColorId = R.color.red;
+
+        getWindow().setBackgroundDrawable(new ColorDrawable(palette.getDarkMutedColor(defaultBackgroundColorId)));
 
         TextView titleView = (TextView) findViewById(R.id.title);
-        titleView.setTextColor(palette.getVibrantColor(0));
+        titleView.setTextColor(palette.getVibrantColor(defaultTextColorId));
 
         TextView descriptionView = (TextView) findViewById(R.id.description);
-        descriptionView.setTextColor(palette.getLightVibrantColor(0));
+        descriptionView.setTextColor(palette.getLightVibrantColor(defaultTextColorId));
 
         /*colorRipple(R.id.info, palette.getDarkMutedColor(0),
                 palette.getDarkVibrantColor(0));*/
-        colorRipple(R.id.info, palette.getMutedColor(0),
-                palette.getVibrantColor(0));
-        colorRipple(R.id.star, palette.getMutedColor(0),
-                palette.getVibrantColor(0));
+        colorRipple(R.id.info, palette.getMutedColor(defaultTextColorId),
+                palette.getVibrantColor(defaultTextColorId));
+        colorRipple(R.id.star, palette.getMutedColor(defaultTextColorId),
+                palette.getVibrantColor(defaultTextColorId));
 
         View infoView = findViewById(R.id.information_container);
-        infoView.setBackgroundColor(palette.getLightMutedColor(0));
+        infoView.setBackgroundColor(palette.getLightMutedColor(defaultBackgroundColorId));
 
         AnimatedPathView star = (AnimatedPathView) findViewById(R.id.star_container);
-        star.setFillColor(palette.getVibrantColor(0));
-        star.setStrokeColor(palette.getLightVibrantColor(0));
+        star.setFillColor(palette.getVibrantColor(defaultBackgroundColorId));
+        star.setStrokeColor(palette.getLightVibrantColor(defaultTextColorId));
     }
 
     private void colorRipple(int id, int bgColor, int tintColor) {
@@ -213,26 +233,38 @@ public class DetailActivity extends Activity {
     }
 
     public void showStar(View view) {
-        toggleStarView();
+        toggleStarView(true);
     }
 
-    private void toggleStarView() {
-        final AnimatedPathView starContainer = (AnimatedPathView) findViewById(R.id.star_container);
+    private void toggleStarView(final boolean update) {
 
         if (starContainer.getVisibility() == View.INVISIBLE) {
             findViewById(R.id.photo).animate().alpha(0.2f);
             starContainer.setAlpha(1.0f);
             starContainer.setVisibility(View.VISIBLE);
             starContainer.reveal();
+
+            if (update) {
+                // Si etoile visible : true
+                establishment.setStared(true);
+                establishment.save();
+            }
+
         } else {
             findViewById(R.id.photo).animate().alpha(1.0f);
             starContainer.animate().alpha(0.0f).withEndAction(new Runnable() {
                 @Override
                 public void run() {
                     starContainer.setVisibility(View.INVISIBLE);
+                    if (update) {
+                        // Si etoile visible : true
+                        establishment.setStared(false);
+                        establishment.save();
+                    }
                 }
             });
         }
+        
     }
 
     public void showInformation(View view) {
@@ -240,6 +272,9 @@ public class DetailActivity extends Activity {
     }
 
     private void toggleInformationView(View view) {
+
+
+
         final View infoContainer = findViewById(R.id.information_container);
 
         int cx = (view.getLeft() + view.getRight()) / 2;
@@ -252,6 +287,10 @@ public class DetailActivity extends Activity {
             reveal = ViewAnimationUtils.createCircularReveal(
                     infoContainer, cx, cy, 0, radius);
             reveal.setInterpolator(new AccelerateInterpolator(2.0f));
+
+            if (starContainer.getVisibility() == View.VISIBLE) {
+                toggleStarView(false);
+            }
         } else {
             reveal = ViewAnimationUtils.createCircularReveal(
                     infoContainer, cx, cy, radius, 0);
@@ -262,6 +301,9 @@ public class DetailActivity extends Activity {
                 }
             });
             reveal.setInterpolator(new DecelerateInterpolator(2.0f));
+            if (establishment.isStared()) {
+                toggleStarView(false);
+            }
         }
         reveal.setDuration(600);
         reveal.start();

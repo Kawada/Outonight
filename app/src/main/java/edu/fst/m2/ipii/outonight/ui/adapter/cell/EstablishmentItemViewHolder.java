@@ -7,10 +7,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +21,7 @@ import java.util.Map;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import edu.fst.m2.ipii.outonight.R;
+import edu.fst.m2.ipii.outonight.constants.WebserviceConstants;
 import edu.fst.m2.ipii.outonight.model.Establishment;
 import edu.fst.m2.ipii.outonight.ui.activity.MapsActivity;
 import edu.fst.m2.ipii.outonight.ui.view.CardFrameLayout;
@@ -66,6 +70,7 @@ public class EstablishmentItemViewHolder extends RecyclerView.ViewHolder impleme
         //photoView.setImageResource(R.drawable.nightclub_header_thumb);
         // Type, photo...
 
+        /*
         Bitmap image;
 
         if (BitmapUtils.sPhotoCache.get(R.drawable.nightclub_header_thumb) != null) {
@@ -82,6 +87,11 @@ public class EstablishmentItemViewHolder extends RecyclerView.ViewHolder impleme
         }
 
         photoView.setImageDrawable(new BitmapDrawable(context.getResources(), image));
+        */
+
+        Log.d(toString(), "photos de " + establishment.getName() + " : " + establishment.getPhoto());
+
+        Picasso.with(context).load(WebserviceConstants.WS_IMG_URL + "/" + establishment.getPhoto()).into(photoView);
     }
 
     public View getView() {

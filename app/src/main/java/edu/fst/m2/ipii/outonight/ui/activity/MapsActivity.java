@@ -41,7 +41,12 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
         setUpMapIfNeeded();
 
-        setUpMapZoom();
+        mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                setUpMapZoom();
+            }
+        });
     }
 
     @Override
@@ -57,10 +62,10 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         }
         LatLngBounds bounds = builder.build();
 
-        int padding = 0; // offset from edges of the map in pixels
+        int padding = 50; // offset from edges of the map in pixels
         CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
 
-        mMap.moveCamera(cu);
+        mMap.animateCamera(cu);
     }
 
     /**

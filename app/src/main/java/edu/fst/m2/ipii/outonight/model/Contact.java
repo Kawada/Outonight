@@ -4,6 +4,8 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
+import org.parceler.Parcel;
+
 /**
  * Created by Dimitri on 09/05/2015.
  */

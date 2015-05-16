@@ -6,4 +6,6 @@ package edu.fst.m2.ipii.outonight.constants;
 public class WebserviceConstants {
 
     public static final String WS_URL = "https://ws.dleguis.net/outonight";
+
+    public static final String WS_IMG_URL = WS_URL + "/img";
 }

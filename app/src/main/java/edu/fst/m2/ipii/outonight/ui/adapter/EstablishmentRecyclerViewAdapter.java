@@ -37,8 +37,7 @@ import retrofit.client.Response;
 
 public class EstablishmentRecyclerViewAdapter extends RecyclerView.Adapter<EstablishmentItemViewHolder> {
 
-    @Inject
-    EstablishmentService establishmentService = EstablishmentServiceImpl.getInstance();
+
 
     private List<Establishment> datasource;
     private Context context;
@@ -46,47 +45,9 @@ public class EstablishmentRecyclerViewAdapter extends RecyclerView.Adapter<Estab
     static final int TYPE_HEADER = 0;
     static final int TYPE_CELL = 1;
 
-
-
-    public EstablishmentRecyclerViewAdapter(final String type, final Context context) {
-        this.datasource = establishmentService.getCachedByType(type);
+    public EstablishmentRecyclerViewAdapter(List<Establishment> datasource, final Context context) {
+        this.datasource = datasource;
         this.context = context;
-
-        List<Establishment> establishments = new ArrayList<>();
-
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(WebserviceConstants.WS_URL)
-                .build();
-
-        EstablishmentApi establishmentApi = restAdapter.create(EstablishmentApi.class);
-
-        // final List<Establishment> freshEstablishments = new ArrayList<>();
-
-        if (type != null) {
-            establishmentApi.fetchByType(type, new Callback<List<Establishment>>() {
-                @Override
-                public void success(List<Establishment> establishments, Response response) {
-
-                    for (Establishment cursor : establishments) {
-                        Toast.makeText(context, "Passage a l'etablissement " + cursor.getName() + " (id no " + cursor.getEstablishmentId() + ")", Toast.LENGTH_SHORT).show();
-                        if (!datasourceContains(cursor)) {
-                            datasource.add(cursor);
-                            cursor.save();
-                            Toast.makeText(context, "Sauvegarde de l'etablissement " + cursor.getName(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    notifyDataSetChanged();
-                    RecyclerViewFragment.notifyDataChanged();
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    Log.e("establishmentService", error.getMessage(), error);
-                }
-            });
-        }
-
     }
 
     @Override
@@ -138,13 +99,7 @@ public class EstablishmentRecyclerViewAdapter extends RecyclerView.Adapter<Estab
         holder.updateView(datasource.get(position));
     }
 
-    private boolean datasourceContains(Establishment establishment) {
-        for (Establishment est : datasource) {
-            if (est.getEstablishmentId() == establishment.getEstablishmentId()) {
-                return true;
-            }
-        }
-
-        return false;
+    public List<Establishment> getDatasource() {
+        return datasource;
     }
 }

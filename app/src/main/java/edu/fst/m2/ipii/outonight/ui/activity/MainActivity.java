@@ -64,8 +64,6 @@ public class MainActivity extends ActionBarActivity {
         ButterKnife.inject(this);
         Icepick.restoreInstanceState(this, savedInstanceState);
 
-        // DualCacheContextUtils.setContext(getApplicationContext());
-
         setTitle("");
 
         toolbar = mViewPager.getToolbar();
@@ -108,11 +106,8 @@ public class MainActivity extends ActionBarActivity {
 
         Establishment establishment = establishmentService.getCachedByName(establishmentName).get(0);
 
-        intent.putExtra("lat", 37.6329946);
-        intent.putExtra("lng", -122.4938344);
-        intent.putExtra("zoom", 14.0f);
-        intent.putExtra("title", establishment.getName());
-        intent.putExtra("description", establishment.getDescription());
+        intent.putExtra("establishmentId", establishment.getEstablishmentId());
+
         intent.putExtra("photo", R.drawable.nightclub_header_thumb);
 
         ImageView hero = (ImageView) parent.findViewById(R.id.photo);
