@@ -5,23 +5,23 @@ import com.activeandroid.query.Select;
 import java.util.List;
 
 import edu.fst.m2.ipii.outonight.model.Establishment;
-import edu.fst.m2.ipii.outonight.service.EstablishmentService;
+import edu.fst.m2.ipii.outonight.service.EstablishmentCacheService;
 
 /**
  * Created by Dimitri on 10/05/2015.
  */
-public class EstablishmentServiceImpl implements EstablishmentService {
+public class EstablishmentCacheServiceImpl implements EstablishmentCacheService {
 
-    private static EstablishmentService instance;
+    private static EstablishmentCacheService instance;
 
-    public static EstablishmentService getInstance() {
+    public static EstablishmentCacheService getInstance() {
         if (null == instance) {
-            instance = new EstablishmentServiceImpl();
+            instance = new EstablishmentCacheServiceImpl();
         }
         return instance;
     }
 
-    private EstablishmentServiceImpl() {
+    private EstablishmentCacheServiceImpl() {
 
     }
 

@@ -1,12 +1,13 @@
 package edu.fst.m2.ipii.outonight.ui.activity;
 
-import android.app.ActivityOptions;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
-import android.support.v4.app.FragmentActivity;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
-import android.widget.ImageView;
-import android.widget.Toast;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -18,23 +19,26 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import edu.fst.m2.ipii.outonight.R;
 import edu.fst.m2.ipii.outonight.model.Establishment;
-import edu.fst.m2.ipii.outonight.service.EstablishmentService;
-import edu.fst.m2.ipii.outonight.service.impl.EstablishmentServiceImpl;
-import edu.fst.m2.ipii.outonight.utils.BitmapUtils;
+import edu.fst.m2.ipii.outonight.service.EstablishmentCacheService;
+import edu.fst.m2.ipii.outonight.service.impl.EstablishmentCacheServiceImpl;
 
-public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener {
+public class MapsActivity extends ActionBarActivity implements GoogleMap.OnMarkerClickListener, LocationListener {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
     @Inject
-    EstablishmentService establishmentService = EstablishmentServiceImpl.getInstance();
+    EstablishmentCacheService establishmentCacheService = EstablishmentCacheServiceImpl.getInstance();
+
+    @InjectView(R.id.toolbar)
+    Toolbar toolbar;
 
     Map<Marker, Establishment> establishmentMarkers = new HashMap<>();
 
@@ -44,6 +48,14 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        ButterKnife.inject(this);
+
+        toolbar.setTitle(R.string.title_activity_maps);
+        toolbar.setNavigationIcon(R.drawable.ic_back);
+        toolbar.setBackgroundColor(getResources().getColor(R.color.google_map_green));
+
+        setSupportActionBar(toolbar);
 
         setUpMapIfNeeded();
 
@@ -112,11 +124,30 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
      */
     private void setUpMap() {
 
-        for (Establishment establishment : establishmentService.getAllCached()) {
+        for (Establishment establishment : establishmentCacheService.getAllCached()) {
 
             establishmentMarkers.put(mMap.addMarker(new MarkerOptions().position(new LatLng(establishment.getAddress().getLat(), establishment.getAddress().getLng())).title(establishment.getName())),
                                     establishment);
         }
+
+        mMap.setMyLocationEnabled(true);
+
+        // Getting LocationManager object from System Service LOCATION_SERVICE
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        // Creating a criteria object to retrieve provider
+        Criteria criteria = new Criteria();
+
+        // Getting the name of the best provider
+        String provider = locationManager.getBestProvider(criteria, true);
+
+        // Getting Current Location
+        Location location = locationManager.getLastKnownLocation(provider);
+
+        if(location!=null){
+            onLocationChanged(location);
+        }
+        locationManager.requestLocationUpdates(provider, 20000, 0, this);
 
     }
 
@@ -138,5 +169,48 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         }
 
         return false;
+    }
+
+    /**
+     * Called when the location has changed.
+     * <p/>
+     * <p> There are no restrictions on the use of the supplied Location object.
+     *
+     * @param location The new location, as a Location object.
+     */
+    @Override
+    public void onLocationChanged(Location location) {
+
+        // Getting latitude of the current location
+        double latitude = location.getLatitude();
+
+        // Getting longitude of the current location
+        double longitude = location.getLongitude();
+
+        // Creating a LatLng object for the current location
+        LatLng latLng = new LatLng(latitude, longitude);
+
+        // Showing the current location in Google Map
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+        // Zoom in the Google Map
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+    }
+
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+    
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 }

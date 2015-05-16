@@ -51,6 +51,10 @@ dependencies {
     compile 'com.caverock:androidsvg:1.2.1'
     // compile 'com.heinrichreimersoftware.materialdrawer:library:2.1'
     compile 'com.squareup.okhttp:okhttp:2.3.0'
+    compile('de.keyboardsurfer.android.widget:crouton:1.8.5@aar') {
+        // exclusion is not necessary, but generally a good idea.
+        exclude group: 'com.google.android', module: 'support-v4'
+    }
 }
 
 apply plugin: 'com.android.application'

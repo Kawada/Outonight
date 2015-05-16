@@ -10,4 +10,5 @@
     <color name="navigationBarColor">@android:color/black</color>
     <color name="drawerArrowColor">@android:color/white</color>
     <color name="photo_tint">#7f101010</color>
+    <color name="google_map_green">#009925</color>
 </resources>

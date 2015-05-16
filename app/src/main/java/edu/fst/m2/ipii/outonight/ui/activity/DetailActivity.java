@@ -52,8 +52,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import edu.fst.m2.ipii.outonight.R;
 import edu.fst.m2.ipii.outonight.model.Establishment;
-import edu.fst.m2.ipii.outonight.service.EstablishmentService;
-import edu.fst.m2.ipii.outonight.service.impl.EstablishmentServiceImpl;
+import edu.fst.m2.ipii.outonight.service.EstablishmentCacheService;
+import edu.fst.m2.ipii.outonight.service.impl.EstablishmentCacheServiceImpl;
 import edu.fst.m2.ipii.outonight.ui.view.AnimatedPathView;
 import edu.fst.m2.ipii.outonight.ui.view.TransitionAdapter;
 import edu.fst.m2.ipii.outonight.utils.BitmapUtils;
@@ -64,7 +64,7 @@ public class DetailActivity extends Activity {
     //Toolbar toolbar;
 
     @Inject
-    EstablishmentService establishmentService = EstablishmentServiceImpl.getInstance();
+    EstablishmentCacheService establishmentCacheService = EstablishmentCacheServiceImpl.getInstance();
 
     @InjectView(R.id.title) TextView titleView;
     @InjectView(R.id.description) TextView descriptionView;
@@ -80,7 +80,7 @@ public class DetailActivity extends Activity {
         ButterKnife.inject(this);
 
         int establishmentId = getIntent().getIntExtra("establishmentId", 0);
-        establishment = establishmentService.getCached(establishmentId);
+        establishment = establishmentCacheService.getCached(establishmentId);
 
         Bitmap photo = setupPhoto(getIntent().getIntExtra("photo", R.drawable.photo1));
 

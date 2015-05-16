@@ -1,29 +1,25 @@
 package edu.fst.m2.ipii.outonight.ui.activity;
 
 import android.app.ActivityOptions;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.util.SparseArray;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.florent37.materialviewpager.MaterialViewPager;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -31,23 +27,18 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import edu.fst.m2.ipii.outonight.R;
 import edu.fst.m2.ipii.outonight.model.Establishment;
-import edu.fst.m2.ipii.outonight.model.Nightclub;
-import edu.fst.m2.ipii.outonight.service.EstablishmentService;
-import edu.fst.m2.ipii.outonight.service.impl.EstablishmentServiceImpl;
+import edu.fst.m2.ipii.outonight.service.EstablishmentCacheService;
+import edu.fst.m2.ipii.outonight.service.impl.EstablishmentCacheServiceImpl;
 import edu.fst.m2.ipii.outonight.ui.adapter.TabPagerAdapter;
-import edu.fst.m2.ipii.outonight.ui.adapter.cell.EstablishmentItemViewHolder;
-import edu.fst.m2.ipii.outonight.ui.fragment.RecyclerViewFragment;
-import edu.fst.m2.ipii.outonight.ui.fragment.WebViewFragment;
-import edu.fst.m2.ipii.outonight.utils.BitmapUtils;
+import edu.fst.m2.ipii.outonight.utils.CroutonUtils;
 import icepick.Icepick;
-import icepick.Icicle;
 
 
 public class MainActivity extends ActionBarActivity {
 
 
     @Inject
-    EstablishmentService establishmentService = EstablishmentServiceImpl.getInstance();
+    EstablishmentCacheService establishmentCacheService = EstablishmentCacheServiceImpl.getInstance();
 
     @InjectView(R.id.materialViewPager)
     MaterialViewPager mViewPager;
@@ -65,6 +56,10 @@ public class MainActivity extends ActionBarActivity {
         Icepick.restoreInstanceState(this, savedInstanceState);
 
         setTitle("");
+
+        if (!isNetworkAvailable()) {
+            CroutonUtils.displayErrorMessage(this, R.string.msg_err_no_connection);
+        }
 
         toolbar = mViewPager.getToolbar();
 
@@ -104,7 +99,17 @@ public class MainActivity extends ActionBarActivity {
         TextView textView = (TextView) parent.findViewById(R.id.name_textview);
         String establishmentName = textView.getText().toString();
 
-        Establishment establishment = establishmentService.getCachedByName(establishmentName).get(0);
+        Establishment establishment;
+
+        try {
+            establishment = establishmentCacheService.getCachedByName(establishmentName).get(0);
+        }
+        catch (IndexOutOfBoundsException exception) {
+            Log.e(toString(), "Erreur lors de la récupération d'un établissement : " + exception.getMessage(), exception);
+            CroutonUtils.displayErrorMessage(this, R.string.msg_err_detail_access);
+            return;
+        }
+
 
         intent.putExtra("establishmentId", establishment.getEstablishmentId());
 
@@ -115,32 +120,6 @@ public class MainActivity extends ActionBarActivity {
         ActivityOptions options =
                 ActivityOptions.makeSceneTransitionAnimation(this, hero, "photo_hero");
         startActivity(intent, options.toBundle());
-
-        // startActivity(intent);
-
-        /*
-        intent.putExtra("lat", 37.6329946);
-        intent.putExtra("lng", -122.4938344);
-        intent.putExtra("zoom", 14.0f);
-        intent.putExtra("title", establishment.getName());
-        intent.putExtra("description", establishment.getDescription());
-
-        /Bitmap bitmap = drawableToBitmap(((ImageView) parent.findViewById(R.id.photo_imageview)).getDrawable());
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-        byte[] b = baos.toByteArray();
-
-        intent.putExtra("photo", R.drawable.bar_header);
-
-        ImageView hero = (ImageView) parent.findViewById(R.id.photo);
-
-        sPhotoCache.put(intent.getIntExtra("photo", -1),
-                ((BitmapDrawable) hero.getDrawable()).getBitmap());
-
-        ActivityOptions options =
-                ActivityOptions.makeSceneTransitionAnimation(this, hero, "photo_hero");
-        startActivity(intent, options.toBundle());
-         */
     }
 
     @Override
@@ -174,5 +153,12 @@ public class MainActivity extends ActionBarActivity {
 
     public MaterialViewPager getmViewPager() {
         return mViewPager;
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

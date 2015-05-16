@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import com.github.florent37.materialviewpager.MaterialViewPagerHelper;
 import com.github.florent37.materialviewpager.adapter.RecyclerViewMaterialAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -22,14 +21,9 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import edu.fst.m2.ipii.outonight.R;
 import edu.fst.m2.ipii.outonight.constants.WebserviceConstants;
-import edu.fst.m2.ipii.outonight.dto.type.EstablishmentType;
-import edu.fst.m2.ipii.outonight.model.Bar;
 import edu.fst.m2.ipii.outonight.model.Establishment;
-import edu.fst.m2.ipii.outonight.model.Nightclub;
-import edu.fst.m2.ipii.outonight.model.Photo;
-import edu.fst.m2.ipii.outonight.model.Restaurant;
-import edu.fst.m2.ipii.outonight.service.EstablishmentService;
-import edu.fst.m2.ipii.outonight.service.impl.EstablishmentServiceImpl;
+import edu.fst.m2.ipii.outonight.service.EstablishmentCacheService;
+import edu.fst.m2.ipii.outonight.service.impl.EstablishmentCacheServiceImpl;
 import edu.fst.m2.ipii.outonight.ui.adapter.EstablishmentRecyclerViewAdapter;
 import edu.fst.m2.ipii.outonight.ws.EstablishmentApi;
 import retrofit.Callback;
@@ -48,7 +42,7 @@ public class RecyclerViewFragment extends Fragment {
     private RecyclerView.Adapter mAdapter;
 
     @Inject
-    EstablishmentService establishmentService = EstablishmentServiceImpl.getInstance();
+    EstablishmentCacheService establishmentCacheService = EstablishmentCacheServiceImpl.getInstance();
 
     public static RecyclerViewFragment newInstance(String type) {
         RecyclerViewFragment recyclerViewFragment = new RecyclerViewFragment();
@@ -78,7 +72,7 @@ public class RecyclerViewFragment extends Fragment {
 
         String type = getArguments().getString("Type");
 
-        List<Establishment> establishments = establishmentService.getCachedByType(type);
+        List<Establishment> establishments = establishmentCacheService.getCachedByType(type);
 
         EstablishmentRecyclerViewAdapter establishmentRecyclerViewAdapter = new EstablishmentRecyclerViewAdapter(establishments, getActivity());
 

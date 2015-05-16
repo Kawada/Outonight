@@ -12,10 +12,6 @@ import java.util.List;
 
 import edu.fst.m2.ipii.outonight.R;
 import edu.fst.m2.ipii.outonight.dto.type.EstablishmentType;
-import edu.fst.m2.ipii.outonight.model.Bar;
-import edu.fst.m2.ipii.outonight.model.Establishment;
-import edu.fst.m2.ipii.outonight.model.Nightclub;
-import edu.fst.m2.ipii.outonight.model.Restaurant;
 import edu.fst.m2.ipii.outonight.ui.activity.MainActivity;
 import edu.fst.m2.ipii.outonight.ui.fragment.RecyclerViewFragment;
 
