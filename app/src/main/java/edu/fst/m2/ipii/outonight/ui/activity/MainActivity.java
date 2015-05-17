@@ -17,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.florent37.materialviewpager.MaterialViewPager;
 
@@ -58,6 +57,7 @@ public class MainActivity extends ActionBarActivity {
         setTitle("");
 
         if (!isNetworkAvailable()) {
+            // Si aucun réseau dispo, notification
             CroutonUtils.displayErrorMessage(this, R.string.msg_err_no_connection);
         }
 
@@ -90,6 +90,10 @@ public class MainActivity extends ActionBarActivity {
         mDrawerToggle.syncState();
     }
 
+    /**
+     * Evénement lancé lors du click sur un élement de la RecyclerView
+     * @param view
+     */
     public void showDetail(View view) {
         Intent intent = new Intent();
         intent.setClass(this, DetailActivity.class);
@@ -134,8 +138,8 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }
 
+        // Click sur l'icone carte
         if (item.getItemId() == R.id.action_maps) {
-            Toast.makeText(this, "Transfert vers le cartes...", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, MapsActivity.class);
 
             startActivity(intent);
@@ -149,6 +153,20 @@ public class MainActivity extends ActionBarActivity {
     @Override public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        try {
+            // On essaie de mettre à jour la liste des éléments sélectionnés
+            ((TabPagerAdapter) mViewPager.getViewPager().getAdapter()).getFragments().get(0).updateDataSource();
+        }
+        catch (IndexOutOfBoundsException|NullPointerException exception) {
+            Log.e(toString(), "Impossible de mettre à jour la liste sélection", exception);
+        }
+
     }
 
     public MaterialViewPager getmViewPager() {

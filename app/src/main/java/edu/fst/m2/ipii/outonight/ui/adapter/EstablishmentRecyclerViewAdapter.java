@@ -23,6 +23,10 @@ public class EstablishmentRecyclerViewAdapter extends RecyclerView.Adapter<Estab
     static final int TYPE_HEADER = 0;
     static final int TYPE_CELL = 1;
 
+    public EstablishmentRecyclerViewAdapter(final Context context) {
+        this.context = context;
+    }
+
     public EstablishmentRecyclerViewAdapter(List<Establishment> datasource, final Context context) {
         this.datasource = datasource;
         this.context = context;
@@ -45,7 +49,7 @@ public class EstablishmentRecyclerViewAdapter extends RecyclerView.Adapter<Estab
 
     @Override
     public EstablishmentItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = null;
+        View view;
 
         switch (viewType) {
             case TYPE_HEADER: {
@@ -67,13 +71,6 @@ public class EstablishmentRecyclerViewAdapter extends RecyclerView.Adapter<Estab
 
     @Override
     public void onBindViewHolder(EstablishmentItemViewHolder holder, int position) {
-        switch (getItemViewType(position)) {
-            case TYPE_HEADER:
-                break;
-            case TYPE_CELL:
-                break;
-        }
-
         holder.updateView(datasource.get(position));
     }
 

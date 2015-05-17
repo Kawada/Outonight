@@ -62,6 +62,31 @@
                 android:contentDescription="@string/info_button_description" />
 
             <ImageButton
+                android:id="@+id/call"
+                android:layout_width="@dimen/floating_button_size"
+                android:layout_height="@dimen/floating_button_size"
+
+                android:layout_gravity="bottom|start"
+                android:layout_marginStart="72dp"
+                android:layout_marginBottom="16dp"
+
+                android:alpha="0.0"
+
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
+
+                android:background="@drawable/info_background"
+                android:src="@drawable/ic_call"
+
+                android:elevation="4dp"
+                android:stateListAnimator="@anim/button_raise"
+
+                android:onClick="callEstablishment"
+
+                android:contentDescription="@string/call_button_description" />
+
+
+            <ImageButton
                 android:id="@+id/star"
                 android:layout_width="@dimen/floating_button_size"
                 android:layout_height="@dimen/floating_button_size"

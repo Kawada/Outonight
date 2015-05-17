@@ -20,7 +20,7 @@ public class DrawerListAdapter extends BaseAdapter {
     public DrawerListAdapter(Context context) {
         this.context = context;
 
-        dataSource.add(new DrawerItem(R.drawable.ic_profile, "Profil"));
+        dataSource.add(new DrawerItem(R.drawable.ic_profile, context.getString(R.string.label_drawer_profile)));
     }
 
     @Override

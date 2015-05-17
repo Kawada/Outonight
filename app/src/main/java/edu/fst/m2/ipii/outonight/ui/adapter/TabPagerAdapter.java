@@ -4,7 +4,6 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
@@ -21,17 +20,20 @@ import edu.fst.m2.ipii.outonight.ui.fragment.RecyclerViewFragment;
 public class TabPagerAdapter extends FragmentStatePagerAdapter {
 
     private MainActivity activity;
-    private LayoutInflater inflater;
     int oldPosition = -1;
-    List<Fragment> fragments = new ArrayList<>();
+    List<RecyclerViewFragment> fragments = new ArrayList<>();
 
     public TabPagerAdapter(MainActivity activity, FragmentManager fm) {
         super(fm);
         this.activity = activity;
 
+        // Selection
         fragments.add(RecyclerViewFragment.newInstance(null));
+        // Restos
         fragments.add(RecyclerViewFragment.newInstance(EstablishmentType.RESTAURANTS));
+        // Bars
         fragments.add(RecyclerViewFragment.newInstance(EstablishmentType.BARS));
+        // Boites
         fragments.add(RecyclerViewFragment.newInstance(EstablishmentType.NIGHTCLUBS));
     }
 
@@ -45,26 +47,28 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
         super.setPrimaryItem(container, position, object);
 
         //only if position changed
-        if(position == oldPosition)
+        if(position == oldPosition) {
             return;
+        }
+
         oldPosition = position;
 
         int color = 0;
-        Drawable drawable = activity.getResources().getDrawable(R.drawable.selection_header);
+        Drawable drawable = activity.getDrawable(R.drawable.selection_header);
         switch (position){
             case 0:
                 color = activity.getResources().getColor(R.color.blue);
                 break;
             case 1:
-                drawable = activity.getResources().getDrawable(R.drawable.restaurant_header);
+                drawable = activity.getDrawable(R.drawable.restaurant_header);
                 color = activity.getResources().getColor(R.color.lime);
                 break;
             case 2:
-                drawable = activity.getResources().getDrawable(R.drawable.bar_header);
+                drawable = activity.getDrawable(R.drawable.bar_header);
                 color = activity.getResources().getColor(R.color.cyan);
                 break;
             case 3:
-                drawable = activity.getResources().getDrawable(R.drawable.nightclub_header);
+                drawable = activity.getDrawable(R.drawable.nightclub_header);
                 color = activity.getResources().getColor(R.color.purple);
                 break;
         }
@@ -82,16 +86,21 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        switch (position){
+        switch (position) {
             case 0:
-                return "Select.";
+                return activity.getString(R.string.title_section_selec);
             case 1:
-                return "Restos";
+                return activity.getString(R.string.title_section_restos);
             case 2:
-                return "Bars";
+                return activity.getString(R.string.title_section_bars);
             case 3:
-                return "Boites";
+                return activity.getString(R.string.title_section_nightclubs);
         }
+
         return "";
+    }
+
+    public List<RecyclerViewFragment> getFragments() {
+        return fragments;
     }
 }

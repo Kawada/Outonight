@@ -125,7 +125,7 @@ public class MapsActivity extends ActionBarActivity implements GoogleMap.OnMarke
     private void setUpMap() {
 
         for (Establishment establishment : establishmentCacheService.getAllCached()) {
-
+            // Ajout des Markers
             establishmentMarkers.put(mMap.addMarker(new MarkerOptions().position(new LatLng(establishment.getAddress().getLat(), establishment.getAddress().getLng())).title(establishment.getName())),
                                     establishment);
         }
@@ -153,7 +153,7 @@ public class MapsActivity extends ActionBarActivity implements GoogleMap.OnMarke
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-
+        // Passage à la vue détail au deuxième click sur un élément
         if (marker.equals(selectedMarker)) {
             Intent intent = new Intent(this, DetailActivity.class);
 

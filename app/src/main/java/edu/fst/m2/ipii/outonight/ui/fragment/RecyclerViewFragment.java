@@ -3,6 +3,7 @@ package edu.fst.m2.ipii.outonight.ui.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,6 +21,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import edu.fst.m2.ipii.outonight.R;
+import edu.fst.m2.ipii.outonight.constants.BundleArguments;
 import edu.fst.m2.ipii.outonight.constants.WebserviceConstants;
 import edu.fst.m2.ipii.outonight.model.Establishment;
 import edu.fst.m2.ipii.outonight.service.EstablishmentCacheService;
@@ -34,12 +36,20 @@ import retrofit.client.Response;
 /**
  * Created by dleguis on 10/05/2015.
  */
-public class RecyclerViewFragment extends Fragment {
+public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    @InjectView(R.id.recyclerView)
+    @InjectView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
+    @InjectView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
+
+    private static boolean NEW_ESTABLISHMENT = true;
+    private static boolean OLD_ESTABLISHMENT = false;
+
     private RecyclerView.Adapter mAdapter;
+
+    private EstablishmentRecyclerViewAdapter establishmentRecyclerViewAdapter;
 
     @Inject
     EstablishmentCacheService establishmentCacheService = EstablishmentCacheServiceImpl.getInstance();
@@ -49,7 +59,7 @@ public class RecyclerViewFragment extends Fragment {
 
         Bundle bundle = new Bundle();
 
-        bundle.putString("Type", type);
+        bundle.putString(BundleArguments.BUNDLE_ESTABLISHMENT_TYPE, type);
 
         recyclerViewFragment.setArguments(bundle);
 
@@ -60,6 +70,9 @@ public class RecyclerViewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recyclerview, container, false);
         ButterKnife.inject(this, view);
+
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+
         return view;
     }
 
@@ -70,13 +83,13 @@ public class RecyclerViewFragment extends Fragment {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        String type = getArguments().getString("Type");
+        String type = getArguments().getString(BundleArguments.BUNDLE_ESTABLISHMENT_TYPE);
 
         List<Establishment> establishments = establishmentCacheService.getCachedByType(type);
 
-        EstablishmentRecyclerViewAdapter establishmentRecyclerViewAdapter = new EstablishmentRecyclerViewAdapter(establishments, getActivity());
+        establishmentRecyclerViewAdapter = new EstablishmentRecyclerViewAdapter(establishments, getActivity());
 
-        loadEstablishments(type, establishmentRecyclerViewAdapter);
+        loadEstablishments(type);
 
         mAdapter = new RecyclerViewMaterialAdapter(establishmentRecyclerViewAdapter);
         mRecyclerView.setAdapter(mAdapter);
@@ -84,43 +97,72 @@ public class RecyclerViewFragment extends Fragment {
         MaterialViewPagerHelper.registerRecyclerView(getActivity(), mRecyclerView, null);
     }
 
-    private boolean datasourceContains(Establishment establishment, List<Establishment> datasource) {
-        for (Establishment est : datasource) {
+    public void updateDataSource() {
+
+        // On fait le ménage dans la liste...
+        establishmentRecyclerViewAdapter.getDatasource().clear();
+
+        String type = getArguments().getString(BundleArguments.BUNDLE_ESTABLISHMENT_TYPE);
+        List<Establishment> establishments = establishmentCacheService.getCachedByType(type);
+
+        for (Establishment establishment : establishments) {
+            addOrUpdate(establishment);
+        }
+
+        loadEstablishments(type);
+
+        mAdapter.notifyDataSetChanged();
+    }
+
+    private boolean addOrUpdate(Establishment establishment) {
+
+        for (Establishment est : establishmentRecyclerViewAdapter.getDatasource()) {
             if (est.getEstablishmentId() == establishment.getEstablishmentId()) {
-                return true;
+                est.setName(establishment.getName());
+                est.setDescription(establishment.getDescription());
+                est.setFeatured(establishment.isFeatured());
+                est.setContact(establishment.getContact());
+                est.setAddress(establishment.getAddress());
+                est.setEstablishmentId(establishment.getEstablishmentId());
+                est.setStared(establishment.isStared());
+                est.setPhoto(establishment.getPhoto());
+                est.setType(establishment.getType());
+
+                return OLD_ESTABLISHMENT;
             }
         }
 
-        return false;
+        establishmentRecyclerViewAdapter.getDatasource().add(establishment);
+
+        return NEW_ESTABLISHMENT;
     }
 
-    private void loadEstablishments(String type, final EstablishmentRecyclerViewAdapter establishmentRecyclerViewAdapter) {
+    private void loadEstablishments(String type) {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(WebserviceConstants.WS_URL)
                 .build();
 
         EstablishmentApi establishmentApi = restAdapter.create(EstablishmentApi.class);
 
+        // On évite d'envoyer un appel avec un type null...
         if (type != null) {
             establishmentApi.fetchByType(type, new Callback<List<Establishment>>() {
                 @Override
                 public void success(List<Establishment> establishments, Response response) {
 
                     for (Establishment cursor : establishments) {
-                        // Toast.makeText(context, "Passage a l'etablissement " + cursor.getName() + " (id no " + cursor.getEstablishmentId() + ")", Toast.LENGTH_SHORT).show();
-                        if (!datasourceContains(cursor, establishmentRecyclerViewAdapter.getDatasource())) {
+                        if (addOrUpdate(cursor) == NEW_ESTABLISHMENT) {
                             // Le save en cascade ne se fait pas bizarrement...
                             cursor.getAddress().save();
                             cursor.getContact().save();
                             cursor.save();
 
                             Log.d("RecyclerViewAdapter", "Sauvegarde : " + cursor.toString());
-                            // Toast.makeText(context, "Sauvegarde de l'etablissement " + cursor.getName(), Toast.LENGTH_SHORT).show();
-                            establishmentRecyclerViewAdapter.getDatasource().add(cursor);
                         }
                     }
 
                     mAdapter.notifyDataSetChanged();
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }
 
                 @Override
@@ -129,5 +171,15 @@ public class RecyclerViewFragment extends Fragment {
                 }
             });
         }
+    }
+
+    public RecyclerView.Adapter getmAdapter() {
+        return mAdapter;
+    }
+
+    @Override
+    public void onRefresh() {
+        String type = getArguments().getString(BundleArguments.BUNDLE_ESTABLISHMENT_TYPE);
+        loadEstablishments(type);
     }
 }

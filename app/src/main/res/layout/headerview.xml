@@ -4,7 +4,6 @@
     android:background="@color/accent_material_light"
     android:layout_height="220dp">
 
-
     <LinearLayout
         android:layout_marginTop="@dimen/drawer_header_photo_margin_top"
         android:orientation="vertical"
@@ -15,7 +14,7 @@
             android:layout_marginTop="5dp"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:src="@drawable/ic_launcher"
+            android:src="@drawable/ic_photo_placeholder"
             android:id="@+id/header_imageview" />
     </LinearLayout>
 
@@ -31,14 +30,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Prénom"
+            android:text="@string/drawer_firstname_placeholder"
             android:id="@+id/header_surname_textview" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Nom"
+            android:text="@string/drawer_lastname_placeholder"
             android:id="@+id/header_name_textview" />
     </LinearLayout>
 </LinearLayout>

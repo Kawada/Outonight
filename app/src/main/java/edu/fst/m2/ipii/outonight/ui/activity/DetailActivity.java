@@ -20,12 +20,15 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Outline;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.graphics.Palette;
 import android.transition.Transition;
@@ -36,6 +39,8 @@ import android.view.ViewAnimationUtils;
 import android.view.ViewOutlineProvider;
 import android.view.WindowInsets;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -57,24 +62,28 @@ import edu.fst.m2.ipii.outonight.service.impl.EstablishmentCacheServiceImpl;
 import edu.fst.m2.ipii.outonight.ui.view.AnimatedPathView;
 import edu.fst.m2.ipii.outonight.ui.view.TransitionAdapter;
 import edu.fst.m2.ipii.outonight.utils.BitmapUtils;
+import edu.fst.m2.ipii.outonight.utils.CroutonUtils;
+import edu.fst.m2.ipii.outonight.utils.FeaturesUtils;
+import icepick.Icepick;
 
 public class DetailActivity extends Activity {
-
-    //@InjectView(R.id.toolbar)
-    //Toolbar toolbar;
 
     @Inject
     EstablishmentCacheService establishmentCacheService = EstablishmentCacheServiceImpl.getInstance();
 
-    @InjectView(R.id.title) TextView titleView;
-    @InjectView(R.id.description) TextView descriptionView;
-    @InjectView(R.id.star_container) AnimatedPathView starContainer ;
+    @InjectView(R.id.title)
+    TextView titleView;
+    @InjectView(R.id.description)
+    TextView descriptionView;
+    @InjectView(R.id.star_container)
+    AnimatedPathView starContainer ;
 
-    private Establishment establishment;
+    protected Establishment establishment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Icepick.restoreInstanceState(this, savedInstanceState);
         setContentView(R.layout.activity_detail);
 
         ButterKnife.inject(this);
@@ -82,14 +91,14 @@ public class DetailActivity extends Activity {
         int establishmentId = getIntent().getIntExtra("establishmentId", 0);
         establishment = establishmentCacheService.getCached(establishmentId);
 
-        Bitmap photo = setupPhoto(getIntent().getIntExtra("photo", R.drawable.photo1));
+        Bitmap photo = setupPhoto(getIntent().getIntExtra("photo", R.drawable.nightclub_header_thumb));
 
         colorize(photo);
 
         setupMap();
         setupText();
 
-        setOutlines(R.id.star, R.id.info);
+        setOutlines(R.id.star, R.id.info, R.id.call);
         applySystemWindowsBottomInset(R.id.container);
 
         getWindow().getEnterTransition().addListener(new TransitionAdapter() {
@@ -102,6 +111,7 @@ public class DetailActivity extends Activity {
 
                 findViewById(R.id.info).animate().alpha(1.0f);
                 findViewById(R.id.star).animate().alpha(1.0f);
+                findViewById(R.id.call).animate().alpha(1.0f);
 
                 getWindow().getEnterTransition().removeListener(this);
 
@@ -127,6 +137,7 @@ public class DetailActivity extends Activity {
 
         findViewById(R.id.info).animate().alpha(0.0f);
         findViewById(R.id.star).animate().alpha(0.0f);
+        findViewById(R.id.call).animate().alpha(0.0f);
     }
 
     private void setupText() {
@@ -146,7 +157,7 @@ public class DetailActivity extends Activity {
         map.addMarker(new MarkerOptions().position(position));
     }
 
-    private void setOutlines(int star, int info) {
+    private void setOutlines(int star, int info, int call) {
         final int size = getResources().getDimensionPixelSize(R.dimen.floating_button_size);
 
         final ViewOutlineProvider vop = new ViewOutlineProvider() {
@@ -158,6 +169,7 @@ public class DetailActivity extends Activity {
 
         findViewById(star).setOutlineProvider(vop);
         findViewById(info).setOutlineProvider(vop);
+        findViewById(call).setOutlineProvider(vop);
     }
 
     private void applySystemWindowsBottomInset(int container) {
@@ -207,6 +219,8 @@ public class DetailActivity extends Activity {
                 palette.getVibrantColor(defaultTextColorId));
         colorRipple(R.id.star, palette.getMutedColor(defaultTextColorId),
                 palette.getVibrantColor(defaultTextColorId));
+        colorRipple(R.id.call, palette.getMutedColor(defaultTextColorId),
+                palette.getVibrantColor(defaultTextColorId));
 
         View infoView = findViewById(R.id.information_container);
         infoView.setBackgroundColor(palette.getLightMutedColor(defaultBackgroundColorId));
@@ -234,6 +248,16 @@ public class DetailActivity extends Activity {
 
     public void showStar(View view) {
         toggleStarView(true);
+    }
+
+    public void callEstablishment(View view) {
+        if (FeaturesUtils.isFeatureAvailable(this, PackageManager.FEATURE_TELEPHONY)) {
+            Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + establishment.getContact().getPhone()));
+            startActivity(intent);
+        }
+        else {
+            CroutonUtils.displayErrorMessage(this, R.string.msg_err_cant_call);
+        }
     }
 
     private void toggleStarView(final boolean update) {
@@ -273,8 +297,6 @@ public class DetailActivity extends Activity {
 
     private void toggleInformationView(View view) {
 
-
-
         final View infoContainer = findViewById(R.id.information_container);
 
         int cx = (view.getLeft() + view.getRight()) / 2;
@@ -282,11 +304,17 @@ public class DetailActivity extends Activity {
         float radius = Math.max(infoContainer.getWidth(), infoContainer.getHeight()) * 2.0f;
 
         Animator reveal;
+        final String titleText;
+        final String descText;
+
         if (infoContainer.getVisibility() == View.INVISIBLE) {
             infoContainer.setVisibility(View.VISIBLE);
             reveal = ViewAnimationUtils.createCircularReveal(
                     infoContainer, cx, cy, 0, radius);
             reveal.setInterpolator(new AccelerateInterpolator(2.0f));
+
+            titleText = establishment.getAddress().getLine1();
+            descText = establishment.getAddress().getCity();
 
             if (starContainer.getVisibility() == View.VISIBLE) {
                 toggleStarView(false);
@@ -304,14 +332,71 @@ public class DetailActivity extends Activity {
             if (establishment.isStared()) {
                 toggleStarView(false);
             }
+
+            titleText = establishment.getName();
+            descText = establishment.getDescription();
         }
         reveal.setDuration(600);
         reveal.start();
+
+        switchText(titleText, descText);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.detail, menu);
         return true;
+    }
+
+    @Override public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Icepick.saveInstanceState(this, outState);
+    }
+
+    private void switchText(final String titleText, final String descText) {
+        // durée de fondu
+        int fadeDuration = 300;
+
+        final Animation in = new AlphaAnimation(0.0f, 1.0f);
+        in.setDuration(fadeDuration);
+
+        final Animation out = new AlphaAnimation(1.0f, 0.0f);
+        out.setDuration(fadeDuration);
+
+        out.setAnimationListener(new Animation.AnimationListener() {
+
+            /**
+             * <p>Notifies the start of the animation.</p>
+             *
+             * @param animation The started animation.
+             */
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                titleView.setText(titleText);
+                titleView.startAnimation(in);
+
+                descriptionView.setText(descText);
+                descriptionView.startAnimation(in);
+
+            }
+
+            /**
+             * <p>Notifies the repetition of the animation.</p>
+             *
+             * @param animation The animation which was repeated.
+             */
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        titleView.startAnimation(out);
+        descriptionView.startAnimation(out);
     }
 }
