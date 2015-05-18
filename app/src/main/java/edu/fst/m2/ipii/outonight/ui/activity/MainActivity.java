@@ -29,6 +29,7 @@ import edu.fst.m2.ipii.outonight.model.Establishment;
 import edu.fst.m2.ipii.outonight.service.EstablishmentCacheService;
 import edu.fst.m2.ipii.outonight.service.impl.EstablishmentCacheServiceImpl;
 import edu.fst.m2.ipii.outonight.ui.adapter.TabPagerAdapter;
+import edu.fst.m2.ipii.outonight.ui.fragment.RecyclerViewFragment;
 import edu.fst.m2.ipii.outonight.utils.CroutonUtils;
 import icepick.Icepick;
 
@@ -39,7 +40,7 @@ public class MainActivity extends ActionBarActivity {
     @Inject
     EstablishmentCacheService establishmentCacheService = EstablishmentCacheServiceImpl.getInstance();
 
-    @InjectView(R.id.materialViewPager)
+    @InjectView(R.id.material_view_pager)
     MaterialViewPager mViewPager;
 
     @InjectView(R.id.drawer_layout) DrawerLayout mDrawer;
@@ -100,16 +101,13 @@ public class MainActivity extends ActionBarActivity {
 
         View parent = (View) view.getParent();
 
-        TextView textView = (TextView) parent.findViewById(R.id.name_textview);
-        String establishmentName = textView.getText().toString();
+        TextView textView = (TextView) parent.findViewById(R.id.id_textview);
+        int establishmentId = Integer.valueOf(textView.getText().toString());
 
-        Establishment establishment;
+        Establishment establishment = establishmentCacheService.getCached(establishmentId);
 
-        try {
-            establishment = establishmentCacheService.getCachedByName(establishmentName).get(0);
-        }
-        catch (IndexOutOfBoundsException exception) {
-            Log.e(toString(), "Erreur lors de la récupération d'un établissement : " + exception.getMessage(), exception);
+        if (establishment == null) {
+            Log.e(toString(), "Erreur lors de la récupération d'un établissement.");
             CroutonUtils.displayErrorMessage(this, R.string.msg_err_detail_access);
             return;
         }
@@ -159,21 +157,22 @@ public class MainActivity extends ActionBarActivity {
     public void onResume() {
         super.onResume();
 
-        try {
-            // On essaie de mettre à jour la liste des éléments sélectionnés
-            ((TabPagerAdapter) mViewPager.getViewPager().getAdapter()).getFragments().get(0).updateDataSource();
+        for (RecyclerViewFragment recyclerViewFragment : ((TabPagerAdapter) mViewPager.getViewPager().getAdapter()).getFragments()) {
+            try {
+                // On essaie de mettre à jour la liste des éléments sélectionnés
+                recyclerViewFragment.updateDataSource();
+            }
+            catch (IndexOutOfBoundsException|NullPointerException exception) {
+                Log.e(toString(), "Impossible de mettre à jour la liste sélection", exception);
+            }
         }
-        catch (IndexOutOfBoundsException|NullPointerException exception) {
-            Log.e(toString(), "Impossible de mettre à jour la liste sélection", exception);
-        }
-
     }
 
     public MaterialViewPager getmViewPager() {
         return mViewPager;
     }
 
-    private boolean isNetworkAvailable() {
+    public boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();

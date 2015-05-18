@@ -48,7 +48,7 @@ public class EstablishmentCacheServiceImpl implements EstablishmentCacheService 
             return getAllStarredEstablishments();
         }
 
-        List<Establishment> establishments = new Select().from(Establishment.class).orderBy("name ASC").where("type = ?", type).execute();
+        List<Establishment> establishments = new Select().from(Establishment.class).orderBy("stared DESC, name ASC").where("type = ?", type).execute();
 
         return  establishments;
 
@@ -60,7 +60,7 @@ public class EstablishmentCacheServiceImpl implements EstablishmentCacheService 
     }
 
     private List<Establishment> getAllStarredEstablishments() {
-        return new Select().from(Establishment.class).orderBy("name ASC").where("stared = ?", true).execute();
+        return new Select().from(Establishment.class).orderBy("stared DESC, featured, name ASC").where("stared = ? OR featured = ?", true, true).execute();
     }
 
 

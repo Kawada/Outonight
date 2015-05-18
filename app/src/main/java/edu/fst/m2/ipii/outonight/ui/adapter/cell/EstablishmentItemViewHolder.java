@@ -28,6 +28,8 @@ import edu.fst.m2.ipii.outonight.utils.BitmapUtils;
 public class EstablishmentItemViewHolder extends RecyclerView.ViewHolder {
 
     @InjectView(R.id.name_textview) TextView nameTextView;
+    @InjectView(R.id.id_textview) TextView idTextView;
+    @InjectView(R.id.star_imageview) ImageView starImageView;
     @InjectView(R.id.photo) ImageView photoView;
 
     private Map<Integer, Bitmap> bitmapCache;
@@ -47,6 +49,15 @@ public class EstablishmentItemViewHolder extends RecyclerView.ViewHolder {
 
     public void updateView(final Establishment establishment) {
         nameTextView.setText(establishment.getName());
+        idTextView.setText(Integer.toString(establishment.getEstablishmentId()));
+
+        if (establishment.isStared()) {
+            starImageView.setVisibility(View.VISIBLE);
+        }
+        else {
+            starImageView.setVisibility(View.INVISIBLE);
+        }
+
         Log.d(toString(), "photo de " + establishment.getName() + " : " + establishment.getPhoto());
 
         // Chargement de l'image et mise en cache RAM
@@ -58,7 +69,7 @@ public class EstablishmentItemViewHolder extends RecyclerView.ViewHolder {
 
             @Override
             public void onError() {
-                Log.e(toString(), "Erreur Picasso pour l'image" + establishment.getPhoto());
+                Log.e(toString(), "Erreur Picasso pour l'image " + establishment.getPhoto());
             }
         });
 

@@ -16,7 +16,19 @@
             style="@style/CardTitle"
             android:id="@+id/name_textview" />
 
+        <ImageView
+            style="@style/CardStar"
+            android:id="@+id/star_imageview" />
+
+        <TextView
+            android:layout_height="0dp"
+            android:layout_width="0dp"
+            android:visibility="invisible"
+            android:id="@+id/id_textview" />
+
     </edu.fst.m2.ipii.outonight.ui.view.CardFrameLayout>
+
+
 
 
 </FrameLayout>

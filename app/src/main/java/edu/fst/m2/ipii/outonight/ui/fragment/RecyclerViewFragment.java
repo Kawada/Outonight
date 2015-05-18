@@ -26,7 +26,9 @@ import edu.fst.m2.ipii.outonight.constants.WebserviceConstants;
 import edu.fst.m2.ipii.outonight.model.Establishment;
 import edu.fst.m2.ipii.outonight.service.EstablishmentCacheService;
 import edu.fst.m2.ipii.outonight.service.impl.EstablishmentCacheServiceImpl;
+import edu.fst.m2.ipii.outonight.ui.activity.MainActivity;
 import edu.fst.m2.ipii.outonight.ui.adapter.EstablishmentRecyclerViewAdapter;
+import edu.fst.m2.ipii.outonight.utils.CroutonUtils;
 import edu.fst.m2.ipii.outonight.ws.EstablishmentApi;
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -106,7 +108,7 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
         List<Establishment> establishments = establishmentCacheService.getCachedByType(type);
 
         for (Establishment establishment : establishments) {
-            addOrUpdate(establishment);
+            addOrUpdate(establishment, true);
         }
 
         loadEstablishments(type);
@@ -114,7 +116,7 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
         mAdapter.notifyDataSetChanged();
     }
 
-    private boolean addOrUpdate(Establishment establishment) {
+    private Establishment addOrUpdate(Establishment establishment, boolean updateStared) {
 
         for (Establishment est : establishmentRecyclerViewAdapter.getDatasource()) {
             if (est.getEstablishmentId() == establishment.getEstablishmentId()) {
@@ -124,17 +126,19 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
                 est.setContact(establishment.getContact());
                 est.setAddress(establishment.getAddress());
                 est.setEstablishmentId(establishment.getEstablishmentId());
-                est.setStared(establishment.isStared());
+                if (updateStared) {
+                    est.setStared(establishment.isStared());
+                }
                 est.setPhoto(establishment.getPhoto());
                 est.setType(establishment.getType());
 
-                return OLD_ESTABLISHMENT;
+                return est;
             }
         }
 
         establishmentRecyclerViewAdapter.getDatasource().add(establishment);
 
-        return NEW_ESTABLISHMENT;
+        return establishment;
     }
 
     private void loadEstablishments(String type) {
@@ -151,14 +155,14 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
                 public void success(List<Establishment> establishments, Response response) {
 
                     for (Establishment cursor : establishments) {
-                        if (addOrUpdate(cursor) == NEW_ESTABLISHMENT) {
-                            // Le save en cascade ne se fait pas bizarrement...
-                            cursor.getAddress().save();
-                            cursor.getContact().save();
-                            cursor.save();
+                        cursor = addOrUpdate(cursor, false);
+                        // Le save en cascade ne se fait pas bizarrement...
+                        cursor.getAddress().save();
+                        cursor.getContact().save();
+                        cursor.save();
 
-                            Log.d("RecyclerViewAdapter", "Sauvegarde : " + cursor.toString());
-                        }
+                        Log.d("RecyclerViewAdapter", "Sauvegarde : " + cursor.toString());
+
                     }
 
                     mAdapter.notifyDataSetChanged();
@@ -168,8 +172,12 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
                 @Override
                 public void failure(RetrofitError error) {
                     Log.e("establishmentService", error.getMessage(), error);
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }
             });
+        }
+        else {
+            mSwipeRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -181,5 +189,10 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
     public void onRefresh() {
         String type = getArguments().getString(BundleArguments.BUNDLE_ESTABLISHMENT_TYPE);
         loadEstablishments(type);
+
+        if (!((MainActivity) getActivity()).isNetworkAvailable()) {
+            // Si aucun réseau dispo, notification
+            CroutonUtils.displayErrorMessage(getActivity(), R.string.msg_err_no_connection);
+        }
     }
 }

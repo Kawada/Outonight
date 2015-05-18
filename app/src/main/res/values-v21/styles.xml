@@ -84,5 +84,14 @@
         <item name="android:background">?android:selectableItemBackground</item>
     </style>
 
+    <style name="CardStar">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">right</item>
+        <item name="android:visibility">invisible</item>
+        <item name="android:background">?android:selectableItemBackground</item>
+        <item name="android:src">@drawable/ic_yellow_star</item>
+    </style>
+
 
 </resources>
