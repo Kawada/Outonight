@@ -22,8 +22,6 @@
         app:viewpager_headerAdditionalHeight="20dp"
         />
 
-    <!-- <include layout="@layout/drawer" /> -->
-
     <!-- Nav drawer -->
     <fragment
         android:id="@+id/fragment_drawer"

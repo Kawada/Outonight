@@ -30,6 +30,7 @@ import edu.fst.m2.ipii.outonight.ui.activity.MainActivity;
 import edu.fst.m2.ipii.outonight.ui.adapter.EstablishmentRecyclerViewAdapter;
 import edu.fst.m2.ipii.outonight.utils.CroutonUtils;
 import edu.fst.m2.ipii.outonight.ws.EstablishmentApi;
+import hugo.weaving.DebugLog;
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
@@ -56,6 +57,11 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
     @Inject
     EstablishmentCacheService establishmentCacheService = EstablishmentCacheServiceImpl.getInstance();
 
+    /**
+     * Crée une nouvelle instance de RecyclerViewFragment avec le type en argument
+     * @param type le type à filtrer
+     * @return un nouveau RecyclerViewFragment
+     */
     public static RecyclerViewFragment newInstance(String type) {
         RecyclerViewFragment recyclerViewFragment = new RecyclerViewFragment();
 
@@ -116,7 +122,13 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
         mAdapter.notifyDataSetChanged();
     }
 
-    private Establishment addOrUpdate(Establishment establishment, boolean updateStared) {
+    /**
+     * Ajoute un élément à la datasource ou le met à jour
+     * @param establishment l'établissement à ajouter/mettre à jour
+     * @param updateStared inclure l'attribut stared (Utile pour empêcher les appels webservice d'écraser cet attribut
+     * @return l'objet inséré/mis à jour
+     */
+    public Establishment addOrUpdate(Establishment establishment, boolean updateStared) {
 
         for (Establishment est : establishmentRecyclerViewAdapter.getDatasource()) {
             if (est.getEstablishmentId() == establishment.getEstablishmentId()) {
@@ -141,6 +153,11 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
         return establishment;
     }
 
+    /**
+     * Charge les établissements à partir des webservices exposés
+     * @param type la catégorie d'établissement
+     */
+    @DebugLog
     private void loadEstablishments(String type) {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(WebserviceConstants.WS_URL)
@@ -177,7 +194,25 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
             });
         }
         else {
+            // Si on est dans la sélection, on met tout de même à jour avec les éléments en cache...
+            List<Establishment> establishments = establishmentCacheService.getCachedByType(type);
+            establishmentRecyclerViewAdapter.getDatasource().clear();
+            establishmentRecyclerViewAdapter.getDatasource().addAll(establishments);
             mSwipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
+
+
+    @Override
+    public void onRefresh() {
+        String type = getArguments().getString(BundleArguments.BUNDLE_ESTABLISHMENT_TYPE);
+        loadEstablishments(type);
+        mAdapter.notifyDataSetChanged();
+
+        if (!((MainActivity) getActivity()).isNetworkAvailable()) {
+            // Si aucun réseau dispo, notification
+            CroutonUtils.displayErrorMessage(getActivity(), R.string.msg_err_no_connection);
         }
     }
 
@@ -185,14 +220,7 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
         return mAdapter;
     }
 
-    @Override
-    public void onRefresh() {
-        String type = getArguments().getString(BundleArguments.BUNDLE_ESTABLISHMENT_TYPE);
-        loadEstablishments(type);
-
-        if (!((MainActivity) getActivity()).isNetworkAvailable()) {
-            // Si aucun réseau dispo, notification
-            CroutonUtils.displayErrorMessage(getActivity(), R.string.msg_err_no_connection);
-        }
+    public List<Establishment> getDataSource() {
+        return establishmentRecyclerViewAdapter.getDatasource();
     }
 }

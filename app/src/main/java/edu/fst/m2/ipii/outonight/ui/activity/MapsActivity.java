@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import edu.fst.m2.ipii.outonight.R;
+import edu.fst.m2.ipii.outonight.constants.BundleArguments;
 import edu.fst.m2.ipii.outonight.model.Establishment;
 import edu.fst.m2.ipii.outonight.service.EstablishmentCacheService;
 import edu.fst.m2.ipii.outonight.service.impl.EstablishmentCacheServiceImpl;
@@ -157,9 +158,7 @@ public class MapsActivity extends ActionBarActivity implements GoogleMap.OnMarke
         if (marker.equals(selectedMarker)) {
             Intent intent = new Intent(this, DetailActivity.class);
 
-            intent.putExtra("establishmentId", establishmentMarkers.get(marker).getEstablishmentId());
-
-            intent.putExtra("photo", establishmentMarkers.get(marker).getEstablishmentId());
+            intent.putExtra(BundleArguments.BUNDLE_ESTABLISHMENT_ID, establishmentMarkers.get(marker).getEstablishmentId());
 
             startActivity(intent);
 

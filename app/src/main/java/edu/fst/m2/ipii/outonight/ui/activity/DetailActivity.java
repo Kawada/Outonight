@@ -55,7 +55,9 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import edu.fst.m2.ipii.outonight.R;
+import edu.fst.m2.ipii.outonight.constants.BundleArguments;
 import edu.fst.m2.ipii.outonight.model.Establishment;
 import edu.fst.m2.ipii.outonight.service.EstablishmentCacheService;
 import edu.fst.m2.ipii.outonight.service.impl.EstablishmentCacheServiceImpl;
@@ -67,6 +69,8 @@ import edu.fst.m2.ipii.outonight.utils.FeaturesUtils;
 import icepick.Icepick;
 
 public class DetailActivity extends Activity {
+
+    public static final int REQUEST_ESTABLISHMENT_ID = 100;
 
     @Inject
     EstablishmentCacheService establishmentCacheService = EstablishmentCacheServiceImpl.getInstance();
@@ -88,10 +92,10 @@ public class DetailActivity extends Activity {
 
         ButterKnife.inject(this);
 
-        int establishmentId = getIntent().getIntExtra("establishmentId", 0);
+        int establishmentId = getIntent().getIntExtra(BundleArguments.BUNDLE_ESTABLISHMENT_ID, 0);
         establishment = establishmentCacheService.getCached(establishmentId);
 
-        Bitmap photo = setupPhoto(getIntent().getIntExtra("photo", R.drawable.nightclub_header_thumb));
+        Bitmap photo = setupPhoto(establishmentId);
 
         colorize(photo);
 
@@ -130,6 +134,9 @@ public class DetailActivity extends Activity {
         color.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                Intent mIntent = new Intent();
+                mIntent.putExtra(BundleArguments.BUNDLE_ESTABLISHMENT_ID, establishment.getEstablishmentId());
+                setResult(RESULT_OK, mIntent);
                 finishAfterTransition();
             }
         });
@@ -246,10 +253,12 @@ public class DetailActivity extends Activity {
         return bitmap;
     }
 
+    @OnClick(R.id.star)
     public void showStar(View view) {
         toggleStarView(true);
     }
 
+    @OnClick(R.id.call)
     public void callEstablishment(View view) {
         if (FeaturesUtils.isFeatureAvailable(this, PackageManager.FEATURE_TELEPHONY)) {
             Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + establishment.getContact().getPhone()));
@@ -291,6 +300,7 @@ public class DetailActivity extends Activity {
         
     }
 
+    @OnClick(R.id.info)
     public void showInformation(View view) {
         toggleInformationView(view);
     }

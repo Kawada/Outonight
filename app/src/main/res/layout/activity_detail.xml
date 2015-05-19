@@ -57,8 +57,6 @@
                 android:elevation="@dimen/button_elevation"
                 android:stateListAnimator="@anim/button_raise"
 
-                android:onClick="showInformation"
-
                 android:contentDescription="@string/info_button_description" />
 
             <ImageButton
@@ -80,8 +78,6 @@
 
                 android:elevation="4dp"
                 android:stateListAnimator="@anim/button_raise"
-
-                android:onClick="callEstablishment"
 
                 android:contentDescription="@string/call_button_description" />
 
@@ -105,8 +101,6 @@
 
                 android:elevation="4dp"
                 android:stateListAnimator="@anim/button_raise"
-
-                android:onClick="showStar"
 
                 android:contentDescription="@string/star_button_description" />
 

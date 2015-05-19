@@ -5,6 +5,8 @@ package edu.fst.m2.ipii.outonight.constants;
  */
 public class BundleArguments {
 
-    public static String BUNDLE_ESTABLISHMENT_TYPE = "Type";
-    public static String BUNDLE_FRAGMENT_TITLE = "Title";
+    public static final String BUNDLE_ESTABLISHMENT_TYPE = "Type";
+    public static final String BUNDLE_FRAGMENT_TITLE = "Title";
+    public static final String BUNDLE_ESTABLISHMENT_ID = "establishmentId";
+
 }

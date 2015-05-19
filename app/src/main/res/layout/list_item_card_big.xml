@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_layout_establishment"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
 
     <edu.fst.m2.ipii.outonight.ui.view.CardFrameLayout
+        android:id="@+id/establishment_card"
         style="@style/Card">
 
         <ImageView

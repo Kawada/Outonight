@@ -13,6 +13,7 @@ import edu.fst.m2.ipii.outonight.R;
 import edu.fst.m2.ipii.outonight.dto.type.EstablishmentType;
 import edu.fst.m2.ipii.outonight.ui.activity.MainActivity;
 import edu.fst.m2.ipii.outonight.ui.fragment.RecyclerViewFragment;
+import edu.fst.m2.ipii.outonight.utils.PerformanceUtils;
 
 /**
  * Created by Dimitri on 10/05/2015.
@@ -74,7 +75,12 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
         }
 
         final int fadeDuration = 400;
-        activity.getmViewPager().setImageDrawable(drawable, fadeDuration);
+
+        // On réserve l'affichage des photos aux terminaux haut de gamme
+        if (PerformanceUtils.getPerformanceLevel(activity) == PerformanceUtils.HIGH_PERFORMANCE_DEVICE) {
+            activity.getmViewPager().setImageDrawable(drawable, fadeDuration);
+        }
+
         activity.getmViewPager().setColor(color,fadeDuration);
 
     }
